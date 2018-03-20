@@ -1,8 +1,9 @@
 import React from 'react';
-import { SearchBar } from '../../containers';
+import { SearchBar, VideoList } from '../../containers';
 
 export default () => (
   <div>
     <SearchBar />
+    <VideoList />
   </div>
 );

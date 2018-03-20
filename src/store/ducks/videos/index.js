@@ -18,7 +18,7 @@ const INITIAL_STATE = {
   videos: []
 };
 
-export const fetchVideos = query => async dispatch => {
+export const fetchVideos = (query = "") => async dispatch => {
   const q = (YOUTUBE_SEARCH_PARAMS.q + ' ' + query).trim();
   const { data } = await axios.get(YOUTUBE_SEARCH_URI, {
     params: { ...YOUTUBE_SEARCH_PARAMS, q }
