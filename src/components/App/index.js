@@ -1,3 +1,8 @@
 import React from 'react';
+import { SearchBar } from '../../containers';
 
-export default () => <div>Hello, World</div>;
+export default () => (
+  <div>
+    <SearchBar />
+  </div>
+);
