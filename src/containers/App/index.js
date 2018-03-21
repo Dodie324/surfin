@@ -1,7 +1,7 @@
 import React from "react";
 import PropTypes from "prop-types";
 import { connect } from "react-redux";
-import { SearchBar, VideoList, VideoDetailPage } from "..";
+import { Header, VideoList, VideoDetailPage } from "..";
 import withInfiniteScroll from "../../HOC/withInfiniteScroll";
 
 const App = ({ showDetails }) => {
@@ -9,7 +9,7 @@ const App = ({ showDetails }) => {
 
   return (
     <div>
-      <SearchBar />
+      <Header />
       {showDetails ? <VideoDetailPage /> : <InfiniteVideoList />}
     </div>
   );
