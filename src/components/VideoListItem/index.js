@@ -1,11 +1,11 @@
-import React from 'react';
-import PropTypes from 'prop-types';
+import React from "react";
+import PropTypes from "prop-types";
 
-const VideoListItem = ({ id, snippet }) => {
+const VideoListItem = ({ id, loadPage, snippet }) => {
   const { description, thumbnails, title } = snippet;
 
   return (
-    <div id={id}>
+    <div id={id} onClick={() => loadPage(id, snippet)}>
       <div>
         <img alt={title} src={thumbnails.high.url} />
       </div>

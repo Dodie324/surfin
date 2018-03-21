@@ -3,7 +3,8 @@ import { connect } from "react-redux";
 import PropTypes from "prop-types";
 
 import { fetchVideos } from "../../store/ducks/videos";
-import { VideoListItem } from "..";
+import { loadVideoDetailPage } from "../../store/ducks/pageDetails";
+import { VideoListItem } from "../../components";
 
 class VideoList extends Component {
   componentDidMount() {
@@ -17,6 +18,7 @@ class VideoList extends Component {
           <VideoListItem
             id={id.videoId}
             key={etag + Math.random()}
+            loadPage={this.props.loadVideoDetailPage}
             snippet={snippet}
           />
         ))}
@@ -33,7 +35,10 @@ const mapStateToProps = ({ surfVideos }) => ({
 VideoList.propTypes = {
   fetchVideos: PropTypes.func.isRequired,
   isLoading: PropTypes.bool.isRequired,
+  loadVideoDetailPage: PropTypes.func.isRequired,
   videos: PropTypes.arrayOf(PropTypes.object).isRequired
 };
 
-export default connect(mapStateToProps, { fetchVideos })(VideoList);
+export default connect(mapStateToProps, { fetchVideos, loadVideoDetailPage })(
+  VideoList
+);

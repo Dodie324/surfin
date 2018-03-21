@@ -1,6 +1,8 @@
-import { combineReducers } from 'redux';
-import surfVideos from "./ducks/videos"
+import { combineReducers } from "redux";
+import pageDetails from "./ducks/pageDetails";
+import surfVideos from "./ducks/videos";
 
 export default combineReducers({
-  surfVideos,
+  pageDetails,
+  surfVideos
 });
