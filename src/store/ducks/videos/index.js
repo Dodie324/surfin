@@ -4,8 +4,7 @@ const CLEAR_VIDEOS = "CLEAR_VIDEOS";
 const FETCH_VIDEO_DATA = "FETCH_VIDEO_DATA";
 const LOADING = "LOADING";
 
-const YOUTUBE_URI = "https://www.googleapis.com/youtube/v3/";
-const YOUTUBE_SEARCH_URI = YOUTUBE_URI + "search";
+const YOUTUBE_SEARCH_URI = "https://www.googleapis.com/youtube/v3/search";
 const YOUTUBE_SEARCH_PARAMS = {
   key: process.env.REACT_APP_GOOGLE_API_KEY,
   maxResults: 15,
