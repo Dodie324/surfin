@@ -2,6 +2,7 @@ import React, { Component } from "react";
 import { connect } from "react-redux";
 import PropTypes from "prop-types";
 
+import { loadVideoDetailPage } from "../../store/ducks/pageDetails";
 import { CommentList, VideoListItem } from "../../components";
 
 class VideoDetailPage extends Component {
@@ -23,6 +24,7 @@ class VideoDetailPage extends Component {
         <VideoListItem
           id={id.videoId}
           key={etag + Math.random()}
+          loadPage={this.props.loadVideoDetailPage}
           snippet={snippet}
         />
       ))}
@@ -51,7 +53,8 @@ VideoDetailPage.propTypes = {
   authorVideos: PropTypes.arrayOf(PropTypes.object),
   comments: PropTypes.arrayOf(PropTypes.object),
   id: PropTypes.string,
+  loadVideoDetailPage: PropTypes.func.isRequired,
   pageDetails: PropTypes.object
 };
 
-export default connect(mapStateToProps)(VideoDetailPage);
+export default connect(mapStateToProps, { loadVideoDetailPage })(VideoDetailPage);
