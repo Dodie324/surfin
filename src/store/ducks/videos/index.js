@@ -5,7 +5,7 @@ const FETCH_VIDEO_DATA = "FETCH_VIDEO_DATA";
 const LOADING = "LOADING";
 
 const YOUTUBE_SEARCH_URI = "https://www.googleapis.com/youtube/v3/search";
-const YOUTUBE_SEARCH_PARAMS = {
+const YOUTUBE_PARAMS = {
   key: process.env.REACT_APP_GOOGLE_API_KEY,
   maxResults: 15,
   part: "snippet",
@@ -20,14 +20,14 @@ const INITIAL_STATE = {
   videos: []
 };
 
-export const fetchVideos = (query = "") => async (dispatch, getState) => {
+export const fetchVideos = (query = "") => async dispatch => {
   dispatch({ type: CLEAR_VIDEOS });
   dispatch({ type: LOADING });
 
   const { data } = await axios.get(YOUTUBE_SEARCH_URI, {
     params: {
-      ...YOUTUBE_SEARCH_PARAMS,
-      q: (YOUTUBE_SEARCH_PARAMS.q + " " + query).trim()
+      ...YOUTUBE_PARAMS,
+      q: (YOUTUBE_PARAMS.q + " " + query).trim()
     }
   });
 
@@ -47,9 +47,9 @@ export const fetchAdditionalVideos = () => async (dispatch, getState) => {
   const { nextPageToken, query } = getState().surfVideos;
   const { data } = await axios.get(YOUTUBE_SEARCH_URI, {
     params: {
-      ...YOUTUBE_SEARCH_PARAMS,
+      ...YOUTUBE_PARAMS,
       pageToken: nextPageToken,
-      q: YOUTUBE_SEARCH_PARAMS.q + " " + query
+      q: (YOUTUBE_PARAMS.q + " " + query).trim()
     }
   });
 
@@ -67,13 +67,18 @@ export default function(state = INITIAL_STATE, action) {
     case CLEAR_VIDEOS:
       return { ...state, videos: [] };
     case FETCH_VIDEO_DATA:
-      return {
+      const updatedState = {
         ...state,
         isLoading: false,
         nextPageToken: action.payload.nextPageToken,
-        query: action.payload.query || state.query,
         videos: [...state.videos, ...action.payload.videos]
-      };
+      }
+
+      if (action.payload.query) {
+        updatedState.query = action.payload.query
+      }
+
+      return updatedState;
     case LOADING:
       return { ...state, isLoading: true };
     default:

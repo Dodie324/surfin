@@ -16,7 +16,11 @@ class Header extends Component {
     return (
       <div>
         <NavButton onClick={this.props.returnToVideoList} />
-        <SearchBar onChange={this.handleOnChange} onClick={this.fetchVideos} />
+        <SearchBar
+          onChange={this.handleOnChange}
+          onClick={this.fetchVideos}
+          query={this.state.query}
+        />
       </div>
     );
   }
