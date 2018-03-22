@@ -19,6 +19,7 @@ const VideoListItem = ({ id, loadPage, snippet }) => {
 
 VideoListItem.propTypes = {
   id: PropTypes.string.isRequired,
+  loadPage: PropTypes.func,
   snippet: PropTypes.object.isRequired
 };
 

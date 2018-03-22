@@ -5,26 +5,46 @@ const RETURN_TO_VIDEOS = "RETURN_TO_VIDEOS";
 
 const YOUTUBE_COMMENTS_URI =
   "https://www.googleapis.com/youtube/v3/commentThreads";
+const YOUTUBE_SEARCH_URI = "https://www.googleapis.com/youtube/v3/search";
+const YOUTUBE_PARAMS = {
+  key: process.env.REACT_APP_GOOGLE_API_KEY,
+  part: "snippet"
+};
 
 const INITIAL_STATE = {
+  authorVideos: [],
   comments: [],
   showDetails: false,
   videoPageDetails: "",
   videoId: ""
 };
 
-export const loadVideoDetailPage = (videoId, videoPageDetails) => async dispatch => {
+export const loadVideoDetailPage = (
+  videoId,
+  videoPageDetails
+) => async dispatch => {
   const { data: { items: comments } } = await axios.get(YOUTUBE_COMMENTS_URI, {
     params: {
-      key: process.env.REACT_APP_GOOGLE_API_KEY,
-      part: "snippet",
+      ...YOUTUBE_PARAMS,
       videoId
     }
   });
 
+  const { data: { items: authorVideos } } = await axios.get(
+    YOUTUBE_SEARCH_URI,
+    {
+      params: {
+        ...YOUTUBE_PARAMS,
+        channelId: videoPageDetails.channelId,
+        maxResults: 10
+      }
+    }
+  );
+
   dispatch({
     type: LOAD_VIDEO_DETAILS,
     payload: {
+      authorVideos,
       comments,
       videoId,
       videoPageDetails
@@ -39,10 +59,8 @@ export default function(state = INITIAL_STATE, action) {
     case LOAD_VIDEO_DETAILS:
       return {
         ...state,
-        comments: action.payload.comments,
-        showDetails: true,
-        videoId: action.payload.videoId,
-        videoPageDetails: action.payload.videoPageDetails
+        ...action.payload,
+        showDetails: true
       };
     case RETURN_TO_VIDEOS:
       return { ...state, showDetails: false };
