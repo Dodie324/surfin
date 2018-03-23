@@ -16,19 +16,23 @@ const YOUTUBE_PARAMS = {
 const INITIAL_STATE = {
   isLoading: false,
   nextPageToken: "",
-  order: "relevance",
+  filter: "order,relevance",
   query: "",
   videos: []
 };
 
-export const fetchVideos = (query = "", order = "relevance") => async dispatch => {
+export const fetchVideos = (query = "", filter = "order,relevance") => async dispatch => {
   dispatch({ type: CLEAR_VIDEOS });
   dispatch({ type: LOADING });
+
+  const filterArray = filter.split(",");
+  const filterKey = filterArray[0];
+  const filterValue = filterArray[1];
 
   const { data } = await axios.get(YOUTUBE_SEARCH_URI, {
     params: {
       ...YOUTUBE_PARAMS,
-      order,
+      [filterKey]: filterValue,
       q: (YOUTUBE_PARAMS.q + " " + query).trim()
     }
   });
@@ -36,8 +40,8 @@ export const fetchVideos = (query = "", order = "relevance") => async dispatch =
   dispatch({
     type: FETCH_VIDEO_DATA,
     payload: {
+      filter,
       nextPageToken: data.nextPageToken,
-      order,
       query,
       videos: data.items
     }
@@ -47,11 +51,15 @@ export const fetchVideos = (query = "", order = "relevance") => async dispatch =
 export const fetchAdditionalVideos = () => async (dispatch, getState) => {
   dispatch({ type: LOADING });
 
-  const { nextPageToken, order, query } = getState().surfVideos;
+  const { nextPageToken, filter, query } = getState().surfVideos;
+  const filterArray = filter.split(",");
+  const filterKey = filterArray[0];
+  const filterValue = filterArray[1];
+
   const { data } = await axios.get(YOUTUBE_SEARCH_URI, {
     params: {
       ...YOUTUBE_PARAMS,
-      order,
+      [filterKey]: filterValue,
       pageToken: nextPageToken,
       q: (YOUTUBE_PARAMS.q + " " + query).trim()
     }
@@ -78,8 +86,8 @@ export default function(state = INITIAL_STATE, action) {
         videos: [...state.videos, ...action.payload.videos]
       }
 
-      if (action.payload.order) {
-        updatedState.order = action.payload.order
+      if (action.payload.filter) {
+        updatedState.filter = action.payload.filter
       }
 
       if (action.payload.query) {

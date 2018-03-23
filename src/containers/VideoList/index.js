@@ -9,7 +9,8 @@ import { VideoListItem } from "../../components";
 
 class VideoList extends Component {
   componentDidMount() {
-    this.props.fetchVideos();
+    const {fetchVideos, videos } = this.props;
+    if (!videos.length) fetchVideos();
   }
 
   render() {
