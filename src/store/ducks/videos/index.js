@@ -16,17 +16,19 @@ const YOUTUBE_PARAMS = {
 const INITIAL_STATE = {
   isLoading: false,
   nextPageToken: "",
+  order: "relevance",
   query: "",
   videos: []
 };
 
-export const fetchVideos = (query = "") => async dispatch => {
+export const fetchVideos = (query = "", order = "relevance") => async dispatch => {
   dispatch({ type: CLEAR_VIDEOS });
   dispatch({ type: LOADING });
 
   const { data } = await axios.get(YOUTUBE_SEARCH_URI, {
     params: {
       ...YOUTUBE_PARAMS,
+      order,
       q: (YOUTUBE_PARAMS.q + " " + query).trim()
     }
   });
@@ -35,6 +37,7 @@ export const fetchVideos = (query = "") => async dispatch => {
     type: FETCH_VIDEO_DATA,
     payload: {
       nextPageToken: data.nextPageToken,
+      order,
       query,
       videos: data.items
     }
@@ -44,10 +47,11 @@ export const fetchVideos = (query = "") => async dispatch => {
 export const fetchAdditionalVideos = () => async (dispatch, getState) => {
   dispatch({ type: LOADING });
 
-  const { nextPageToken, query } = getState().surfVideos;
+  const { nextPageToken, order, query } = getState().surfVideos;
   const { data } = await axios.get(YOUTUBE_SEARCH_URI, {
     params: {
       ...YOUTUBE_PARAMS,
+      order,
       pageToken: nextPageToken,
       q: (YOUTUBE_PARAMS.q + " " + query).trim()
     }
@@ -72,6 +76,10 @@ export default function(state = INITIAL_STATE, action) {
         isLoading: false,
         nextPageToken: action.payload.nextPageToken,
         videos: [...state.videos, ...action.payload.videos]
+      }
+
+      if (action.payload.order) {
+        updatedState.order = action.payload.order
       }
 
       if (action.payload.query) {

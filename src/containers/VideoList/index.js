@@ -4,6 +4,7 @@ import PropTypes from "prop-types";
 
 import { fetchVideos } from "../../store/ducks/videos";
 import { loadVideoDetailPage } from "../../store/ducks/pageDetails";
+import { Filters } from "..";
 import { VideoListItem } from "../../components";
 
 class VideoList extends Component {
@@ -14,6 +15,7 @@ class VideoList extends Component {
   render() {
     return (
       <div>
+        <Filters />
         {this.props.videos.map(({ etag, id, snippet }) => (
           <VideoListItem
             id={id.videoId}
