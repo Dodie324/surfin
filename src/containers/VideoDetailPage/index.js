@@ -6,6 +6,10 @@ import { loadVideoDetailPage } from "../../store/ducks/pageDetails";
 import { CommentList, VideoListItem } from "../../components";
 
 class VideoDetailPage extends Component {
+  componentDidMount() {
+    window.scrollTo(0, 0);
+  }
+
   renderHeroVideo = () => (
     <div>
       <iframe

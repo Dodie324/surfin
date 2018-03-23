@@ -9,7 +9,8 @@ import { VideoListItem } from "../../components";
 
 class VideoList extends Component {
   componentDidMount() {
-    const {fetchVideos, videos } = this.props;
+    const {fetchVideos, position, videos } = this.props;
+    window.scrollTo(0, position);
     if (!videos.length) fetchVideos();
   }
 
@@ -31,7 +32,8 @@ class VideoList extends Component {
   }
 }
 
-const mapStateToProps = ({ surfVideos }) => ({
+const mapStateToProps = ({ scrollEvent, surfVideos }) => ({
+  position: scrollEvent.position,
   videos: surfVideos.videos
 });
 
@@ -39,6 +41,7 @@ VideoList.propTypes = {
   fetchVideos: PropTypes.func.isRequired,
   isLoading: PropTypes.bool.isRequired,
   loadVideoDetailPage: PropTypes.func.isRequired,
+  position: PropTypes.number.isRequired,
   videos: PropTypes.arrayOf(PropTypes.object).isRequired
 };
 
