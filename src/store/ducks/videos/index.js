@@ -23,7 +23,6 @@ const INITIAL_STATE = {
 
 export const fetchVideos = (query = "", filter = "order,relevance") => async dispatch => {
   dispatch({ type: CLEAR_VIDEOS });
-  dispatch({ type: LOADING });
 
   const filterArray = filter.split(",");
   const filterKey = filterArray[0];

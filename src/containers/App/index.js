@@ -1,26 +1,56 @@
-import React from "react";
+import React, { Component, Fragment } from "react";
 import PropTypes from "prop-types";
 import { connect } from "react-redux";
-import { Header, VideoList, VideoDetailPage } from "..";
+import { fetchVideos } from "../../store/ducks/videos";
+import { Filters, Header, VideoList, VideoDetailPage } from "..";
+import { HeroVideo } from "../../components";
 import withInfiniteScroll from "../../HOC/withInfiniteScroll";
 
-const App = ({ showDetails }) => {
-  const InfiniteVideoList = withInfiniteScroll(VideoList);
+class App extends Component {
+  componentDidMount() {
+    this.props.fetchVideos();
+  }
 
-  return (
-    <div>
-      <Header />
-      {showDetails ? <VideoDetailPage /> : <InfiniteVideoList />}
-    </div>
-  );
+  renderComponent = () => {
+    if (this.props.showDetails) {
+      return <VideoDetailPage />;
+    } else {
+      const { videos } = this.props;
+
+      if (!videos.length) return <div>Hold on, dude. Fetching some gnarly vids</div>;
+
+      const firstHit = videos[0];
+      const InfiniteVideoList = withInfiniteScroll(VideoList);
+
+      return (
+        <Fragment>
+          <HeroVideo id={firstHit.id} snippet={firstHit.snippet} />
+          <Filters />
+          <InfiniteVideoList videos={videos} />
+        </Fragment>
+      );
+    }
+  };
+
+  render() {
+    return (
+      <div>
+        <Header />
+        {this.renderComponent()}
+      </div>
+    );
+  }
 };
 
-const mapStateToProps = ({ pageDetails }) => ({
-  showDetails: pageDetails.showDetails
+const mapStateToProps = ({ pageDetails, surfVideos }) => ({
+  showDetails: pageDetails.showDetails,
+  videos: surfVideos.videos
 });
 
 App.propTypes = {
-  showDetails: PropTypes.bool.isRequired
+  fetchVideos: PropTypes.func.isRequired,
+  showDetails: PropTypes.bool.isRequired,
+  videos: PropTypes.arrayOf(PropTypes.object)
 };
 
-export default connect(mapStateToProps)(App);
+export default connect(mapStateToProps, { fetchVideos })(App);

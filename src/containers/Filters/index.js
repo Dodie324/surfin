@@ -27,7 +27,6 @@ const FILTER_GROUPS = {
 
 const Filters = ({ fetchVideos, query }) => (
   <div>
-    <span>Filter</span>
     {Object.keys(FILTER_GROUPS).map(filterGroup => (
       <div key={filterGroup}>
         <span>{filterGroup}</span>
