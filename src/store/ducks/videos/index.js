@@ -2,7 +2,7 @@ import axios from "axios";
 
 const CLEAR_VIDEOS = "CLEAR_VIDEOS";
 const FETCH_VIDEO_DATA = "FETCH_VIDEO_DATA";
-const LOADING = "LOADING";
+const LOADING_VIDEOS = "LOADING_VIDEOS";
 
 const YOUTUBE_SEARCH_URI = "https://www.googleapis.com/youtube/v3/search";
 const YOUTUBE_PARAMS = {
@@ -48,7 +48,7 @@ export const fetchVideos = (query = "", filter = "order,relevance") => async dis
 };
 
 export const fetchAdditionalVideos = () => async (dispatch, getState) => {
-  dispatch({ type: LOADING });
+  dispatch({ type: LOADING_VIDEOS });
 
   const { nextPageToken, filter, query } = getState().surfVideos;
   const filterArray = filter.split(",");
@@ -94,7 +94,7 @@ export default function(state = INITIAL_STATE, action) {
       }
 
       return updatedState;
-    case LOADING:
+    case LOADING_VIDEOS:
       return { ...state, isLoading: true };
     default:
       return state;

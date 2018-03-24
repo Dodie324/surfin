@@ -36,13 +36,14 @@ class App extends Component {
     return (
       <div>
         <Header />
-        {this.renderComponent()}
+        {this.props.isLoading ? <div>Loading...</div> : this.renderComponent()}
       </div>
     );
   }
-};
+}
 
 const mapStateToProps = ({ pageDetails, surfVideos }) => ({
+  isLoading: pageDetails.isLoading,
   showDetails: pageDetails.showDetails,
   videos: surfVideos.videos
 });

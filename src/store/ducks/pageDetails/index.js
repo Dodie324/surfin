@@ -1,6 +1,7 @@
 import axios from "axios";
 
-const LOAD_VIDEO_DETAILS = "LOAD_VIDEO_DETAILS";
+const LOADING_PAGE_DETAILS = "LOADING_PAGE_DETAILS";
+const RENDER_PAGE_DETAILS = "RENDER_PAGE_DETAILS";
 const RETURN_TO_VIDEOS = "RETURN_TO_VIDEOS";
 
 const YOUTUBE_PARAMS = {
@@ -16,6 +17,7 @@ const apiURI = {
 const INITIAL_STATE = {
   authorVideos: [],
   comments: [],
+  isLoading: false,
   showDetails: false,
   videoPageDetails: "",
   videoId: ""
@@ -68,11 +70,13 @@ export const loadVideoDetailPage = (
   videoId,
   videoPageDetails
 ) => async (dispatch, { pageDetails }) => {
+  dispatch({ type: LOADING_PAGE_DETAILS });
+
   const comments = await cachedComments(videoId);
   const authorVideos = await cachedAuthorVideos(videoPageDetails.channelId);
 
   dispatch({
-    type: LOAD_VIDEO_DETAILS,
+    type: RENDER_PAGE_DETAILS,
     payload: {
       authorVideos,
       comments,
@@ -86,10 +90,13 @@ export const returnToVideoList = () => ({ type: RETURN_TO_VIDEOS });
 
 export default function(state = INITIAL_STATE, action) {
   switch (action.type) {
-    case LOAD_VIDEO_DETAILS:
+    case LOADING_PAGE_DETAILS:
+      return { ...state, isLoading: true };
+    case RENDER_PAGE_DETAILS:
       return {
         ...state,
         ...action.payload,
+        isLoading: false,
         showDetails: true
       };
     case RETURN_TO_VIDEOS:
