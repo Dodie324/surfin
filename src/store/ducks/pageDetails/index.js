@@ -39,9 +39,9 @@ const memoizedData = (field) => {
     if (id in cache && timeDiff < 60) {
       return cache[id];
     } else {
-      let params = {};
       loadedAt = new Date();
 
+      let params = {};
       if (field === 'comments') {
         params = {
           ...YOUTUBE_PARAMS,
@@ -55,7 +55,13 @@ const memoizedData = (field) => {
         };
       }
 
-      const { data: { items } } = await axios.get(apiURI[field], { params });
+      let items;
+      try {
+        const { data } = await axios.get(apiURI[field], { params });
+        items = data.items || [];
+      } catch(_) {
+        items = [];
+      }
 
       cache[id] = items;
       return items;

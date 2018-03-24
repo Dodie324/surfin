@@ -1,6 +1,7 @@
 import axios from "axios";
 
 const CLEAR_VIDEOS = "CLEAR_VIDEOS";
+const ERROR = "ERROR";
 const FETCH_VIDEO_DATA = "FETCH_VIDEO_DATA";
 const LOADING_VIDEOS = "LOADING_VIDEOS";
 
@@ -18,6 +19,7 @@ const INITIAL_STATE = {
   nextPageToken: "",
   filter: "order,relevance",
   query: "",
+  totalResults: null,
   videos: []
 };
 
@@ -28,23 +30,31 @@ export const fetchVideos = (query = "", filter = "order,relevance") => async dis
   const filterKey = filterArray[0];
   const filterValue = filterArray[1];
 
-  const { data } = await axios.get(YOUTUBE_SEARCH_URI, {
-    params: {
-      ...YOUTUBE_PARAMS,
-      [filterKey]: filterValue,
-      q: (YOUTUBE_PARAMS.q + " " + query).trim()
-    }
-  });
+  try {
+    const { data } = await axios.get(YOUTUBE_SEARCH_URI, {
+      params: {
+        ...YOUTUBE_PARAMS,
+        [filterKey]: filterValue,
+        q: (YOUTUBE_PARAMS.q + " " + query).trim()
+      }
+    });
 
-  dispatch({
-    type: FETCH_VIDEO_DATA,
-    payload: {
-      filter,
-      nextPageToken: data.nextPageToken,
-      query,
-      videos: data.items
-    }
-  });
+    dispatch({
+      type: FETCH_VIDEO_DATA,
+      payload: {
+        filter,
+        nextPageToken: data.nextPageToken,
+        query,
+        totalResults: data.pageInfo.totalResults,
+        videos: data.items
+      }
+    });
+  } catch({ response }) {
+    dispatch({
+      type: ERROR,
+      payload: { error: response.data.error.message }
+    });
+  }
 };
 
 export const fetchAdditionalVideos = () => async (dispatch, getState) => {
@@ -55,33 +65,44 @@ export const fetchAdditionalVideos = () => async (dispatch, getState) => {
   const filterKey = filterArray[0];
   const filterValue = filterArray[1];
 
-  const { data } = await axios.get(YOUTUBE_SEARCH_URI, {
-    params: {
-      ...YOUTUBE_PARAMS,
-      [filterKey]: filterValue,
-      pageToken: nextPageToken,
-      q: (YOUTUBE_PARAMS.q + " " + query).trim()
-    }
-  });
+  try {
+    const { data } = await axios.get(YOUTUBE_SEARCH_URI, {
+      params: {
+        ...YOUTUBE_PARAMS,
+        [filterKey]: filterValue,
+        pageToken: nextPageToken,
+        q: (YOUTUBE_PARAMS.q + " " + query).trim()
+      }
+    });
 
-  dispatch({
-    type: FETCH_VIDEO_DATA,
-    payload: {
-      nextPageToken: data.nextPageToken,
-      videos: data.items
-    }
-  });
+    dispatch({
+      type: FETCH_VIDEO_DATA,
+      payload: {
+        nextPageToken: data.nextPageToken,
+        totalResults: data.pageInfo.totalResults,
+        videos: data.items
+      }
+    });
+  } catch({ response }) {
+    dispatch({
+      type: ERROR,
+      payload: { error: response.data.error.message }
+    });
+  }
 };
 
 export default function(state = INITIAL_STATE, action) {
   switch (action.type) {
     case CLEAR_VIDEOS:
       return { ...state, videos: [] };
+    case ERROR:
+      return { ...state, error: action.payload.error }
     case FETCH_VIDEO_DATA:
       const updatedState = {
         ...state,
         isLoading: false,
         nextPageToken: action.payload.nextPageToken,
+        totalResults: action.payload.totalResults,
         videos: [...state.videos, ...action.payload.videos]
       }
 

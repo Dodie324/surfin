@@ -19,7 +19,8 @@ const withInfiniteScroll = Component => {
       if (
         window.innerHeight + window.scrollY >=
           document.body.offsetHeight - 100 &&
-        !this.props.isLoading
+        !this.props.isLoading &&
+        this.props.token
       ) {
         this.props.fetchAdditionalVideos();
       }
@@ -32,13 +33,15 @@ const withInfiniteScroll = Component => {
   }
 
   const mapStateToProps = ({ surfVideos }) => ({
-    isLoading: surfVideos.isLoading
+    isLoading: surfVideos.isLoading,
+    token: surfVideos.nextPageToken
   });
 
   WithInfiniteScroll.propTypes = {
     isLoading: PropTypes.bool.isRequired,
     fetchAdditionalVideos: PropTypes.func.isRequired,
-    saveScrollPosition: PropTypes.func
+    saveScrollPosition: PropTypes.func,
+    token: PropTypes.string
   };
 
   return connect(mapStateToProps, {

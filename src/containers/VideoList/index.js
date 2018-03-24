@@ -11,7 +11,19 @@ class VideoList extends Component {
     window.scrollTo(0, position);
   }
 
+  renderMessageOrNot = () => {
+    if (!this.props.token) {
+      return <div>End of results</div>
+    } else if (this.props.isLoading) {
+      return <div>Fetching more videos, brah</div>;
+    } else {
+      return null;
+    }
+  }
+
   render() {
+    if (this.props.error) return <div>{`Bummer, dude. There seems to be an issue. ${this.props.error}`}</div>;
+
     return (
       <div>
         {this.props.videos.map(({ etag, id, snippet }) => (
@@ -22,19 +34,22 @@ class VideoList extends Component {
             snippet={snippet}
           />
         ))}
-        {this.props.isLoading && <span>Fetching some more videos, brah</span>}
+        {this.renderMessageOrNot()}
       </div>
     );
   }
 }
 
-const mapStateToProps = ({ scrollEvent }) => ({
+const mapStateToProps = ({ scrollEvent, surfVideos }) => ({
+  error: surfVideos.error,
   position: scrollEvent.position
 });
 
 VideoList.propTypes = {
+  error: PropTypes.string,
   isLoading: PropTypes.bool.isRequired,
   loadVideoDetailPage: PropTypes.func.isRequired,
+  token: PropTypes.string,
   position: PropTypes.number.isRequired,
   videos: PropTypes.arrayOf(PropTypes.object).isRequired
 };
