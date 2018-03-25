@@ -1,9 +1,25 @@
 import React, { Component } from "react";
 import { connect } from "react-redux";
 import PropTypes from "prop-types";
+import styled from "styled-components";
 
 import { loadVideoDetailPage } from "../../store/ducks/pageDetails";
 import { VideoListItem } from "../../components";
+
+const VideoListContainer = styled.div`
+  display: flex;
+  flex-flow: wrap;
+  justify-content: center;
+  margin: 0 auto;
+  max-width: 1200px;
+  padding-top: 1em;
+`;
+
+const StyledMessage = styled.div`
+  font-size: .75em;
+  text-align: center;
+  text-transform: uppercase;
+`;
 
 class VideoList extends Component {
   componentDidMount() {
@@ -13,9 +29,9 @@ class VideoList extends Component {
 
   renderMessageOrNot = () => {
     if (!this.props.token) {
-      return <div>End of results</div>
+      return <StyledMessage>End of results</StyledMessage>
     } else if (this.props.isLoading) {
-      return <div>Fetching more videos, brah</div>;
+      return <StyledMessage>Fetching more videos, brah</StyledMessage>;
     } else {
       return null;
     }
@@ -25,7 +41,7 @@ class VideoList extends Component {
     if (this.props.error) return <div>{`Bummer, dude. There seems to be an issue. ${this.props.error}`}</div>;
 
     return (
-      <div>
+      <VideoListContainer>
         {this.props.videos.map(({ etag, id, snippet }) => (
           <VideoListItem
             id={id.videoId}
@@ -35,7 +51,7 @@ class VideoList extends Component {
           />
         ))}
         {this.renderMessageOrNot()}
-      </div>
+      </VideoListContainer>
     );
   }
 }

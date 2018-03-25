@@ -1,19 +1,60 @@
 import React from "react";
 import PropTypes from "prop-types";
+import styled, { css } from "styled-components";
+
+const VideoListItemContainer = styled.div`
+  cursor: pointer;
+  display: block;
+  margin: 0.5em 0;
+  padding: 0 0.5em;
+  width: 16.6666666667%;
+`;
+
+const Thumbnail = styled.img`
+  height: auto;
+  margin-right: 0.5em;
+  width: 100%;
+`;
+
+const Description = styled.div`
+  padding: .5em 0;
+`;
+
+const WebkitBox = css`
+  -webkit-box-orient: verticali;
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  overflow: hidden;
+`;
+
+const Title = styled.h5`
+  ${WebkitBox}
+  height: 48px;
+  margin: 0;
+`;
+
+const Overview = styled.p`
+  ${WebkitBox}
+  color: rgba(0, 0, 0, 0.6);
+  font-size: 0.75em;
+  height: 60px;
+  line-height: 20px;
+  margin: 0.5em 0;
+`
 
 const VideoListItem = ({ id, loadPage, snippet }) => {
   const { description, thumbnails, title } = snippet;
 
   return (
-    <div id={id} onClick={() => loadPage(id, snippet)}>
+    <VideoListItemContainer id={id} onClick={() => loadPage(id, snippet)}>
       <div>
-        <img alt={title} src={thumbnails.high.url} />
+        <Thumbnail alt={title} src={thumbnails.high.url} />
       </div>
-      <div>
-        <h5>{title.toUpperCase()}</h5>
-        <p>{description}</p>
-      </div>
-    </div>
+      <Description>
+        <Title>{title.toUpperCase()}</Title>
+        <Overview>{description}</Overview>
+      </Description>
+    </VideoListItemContainer>
   );
 };
 

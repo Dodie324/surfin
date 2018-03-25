@@ -1,6 +1,8 @@
-import React from "react";
+import React, { Component } from "react";
 import PropTypes from "prop-types";
 import { connect } from "react-redux";
+import styled from "styled-components";
+import { Filter as FilterIcon } from "react-feather";
 
 import { fetchVideos } from "../../store/ducks/videos";
 
@@ -13,34 +15,105 @@ const FILTER_GROUPS = {
     { type: "order,videoCount", value: "Video Count" },
     { type: "order,viewCount", value: "View Count" }
   ],
-  "Duration": [
+  Duration: [
     { type: "videoDuration,short", value: "Short (< 4 minutes)" },
     { type: "videoDuration,long", value: "Long (> 20 minutes)" }
   ],
-  "Features": [
+  Features: [
     { type: "videoDefinition,high", value: "HD" },
     { type: "videoDefinition,standard", value: "Standard" },
     { type: "videoDimension,2d", value: "2D" },
-    { type: "videoDimension,3d", value: "3D" },
+    { type: "videoDimension,3d", value: "3D" }
   ]
 };
 
-const Filters = ({ fetchVideos, query }) => (
-  <div>
-    {Object.keys(FILTER_GROUPS).map(filterGroup => (
-      <div key={filterGroup}>
-        <span>{filterGroup}</span>
-        <ul>
-          {FILTER_GROUPS[filterGroup].map(({ type, value }) => (
-            <li key={type} onClick={() => fetchVideos(query, type)}>
-              {value}
-            </li>
-          ))}
-        </ul>
-      </div>
-    ))}
-  </div>
-);
+const FiltersContainer = styled.div`
+  background-color: #fafbfc;
+  border-bottom: 1px solid #ccc;
+  padding: 1em 0;
+`;
+
+const Menu = styled.div`
+  display: flex;
+  justify-content: flex-end;
+`;
+
+const IconContainer = styled.div`
+  align-items: center;
+  display: flex;
+  cursor: pointer;
+  margin-right: 2em;
+`;
+
+const StyledSpan = styled.span`
+  font-size: .85em;
+  text-transform: uppercase;
+`;
+
+const FilterGroups = styled.div`
+  display: flex;
+  justify-content: space-around;
+  margin: 0 auto;
+  max-width: 1200px;
+`;
+
+const FilterList = styled.ul`
+  list-style-type: none;
+  margin: 0;
+  padding: 0;
+`;
+
+const FilterListItem = styled.li`
+  cursor: pointer;
+  font-weight: lighter;
+  padding: 0.25em 0;
+`;
+
+const Title = styled.h4`
+  border-bottom: 1px solid rgba(255, 255, 255, 0.125);
+  font-weight: bold;
+  margin-top: 0;
+`;
+
+class Filters extends Component {
+  state = { showFilters: false };
+
+  toggleFilters = () => this.setState({ showFilters: !this.state.showFilters });
+
+  renderFilterGroups = () => (
+    <FilterGroups>
+      {Object.keys(FILTER_GROUPS).map(filterGroup => (
+        <div key={filterGroup}>
+          <Title>{filterGroup}</Title>
+          <FilterList>
+            {FILTER_GROUPS[filterGroup].map(({ type, value }) => (
+              <FilterListItem
+                key={type}
+                onClick={() => this.props.fetchVideos(this.props.query, type)}
+              >
+                {value}
+              </FilterListItem>
+            ))}
+          </FilterList>
+        </div>
+      ))}
+    </FilterGroups>
+  );
+
+  render() {
+    return (
+      <FiltersContainer>
+        <Menu>
+          <IconContainer onClick={this.toggleFilters}>
+            <FilterIcon/>
+            <StyledSpan>Filters</StyledSpan>
+          </IconContainer>
+        </Menu>
+        {this.state.showFilters && this.renderFilterGroups()}
+      </FiltersContainer>
+    );
+  }
+}
 
 const mapStateToProps = ({ surfVideos }) => ({
   query: surfVideos.query

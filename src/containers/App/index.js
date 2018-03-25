@@ -1,10 +1,21 @@
 import React, { Component, Fragment } from "react";
 import PropTypes from "prop-types";
 import { connect } from "react-redux";
+import styled from "styled-components";
 import { fetchVideos } from "../../store/ducks/videos";
 import { Filters, Header, VideoList, VideoDetailPage } from "..";
 import { HeroVideo } from "../../components";
 import withInfiniteScroll from "../../HOC/withInfiniteScroll";
+
+const AppContainer = styled.div`
+  background-color; #eef1f2;
+`;
+
+const StyledMessage = styled.div`
+  font-size: .75em;
+  text-align: center;
+  text-transform: uppercase;
+`;
 
 class App extends Component {
   componentDidMount() {
@@ -16,18 +27,15 @@ class App extends Component {
 
     switch (true) {
       case isLoading:
-        return <div>Loading...</div>;
+        return <StyledMessage>Loading...</StyledMessage>;
       case showDetails:
         return <VideoDetailPage />;
       case totalResults === 0:
-        return <div>No videos found</div>;
+        return <StyledMessage>No videos found</StyledMessage>;
       case videos.length > 0:
-        const firstHit = videos[0];
         const InfiniteVideoList = withInfiniteScroll(VideoList);
-
         return (
           <Fragment>
-            <HeroVideo id={firstHit.id} snippet={firstHit.snippet} />
             <Filters />
             <InfiniteVideoList videos={videos} />
           </Fragment>
@@ -38,19 +46,29 @@ class App extends Component {
   };
 
   render() {
+    let videoData;
+    if (this.props.showDetails) {
+      videoData = { id: { videoId: this.props.id }, snippet: this.props.pageDetails };
+    } else {
+      videoData = this.props.videos[0];
+    }
+
     return (
-      <div>
-        <Header />
+      <AppContainer>
+        <Header isDetailPage={this.props.showDetails} />
+        <HeroVideo {...videoData} />
         {this.renderComponent()}
-      </div>
+      </AppContainer>
     );
   }
 }
 
 const mapStateToProps = ({ pageDetails, surfVideos }) => ({
+  id: pageDetails.videoId,
   isLoading: pageDetails.isLoading,
   showDetails: pageDetails.showDetails,
   totalResults: surfVideos.totalResults,
+  pageDetails: pageDetails.videoPageDetails,
   videos: surfVideos.videos
 });
 

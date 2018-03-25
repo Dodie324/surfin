@@ -8,7 +8,7 @@ const LOADING_VIDEOS = "LOADING_VIDEOS";
 const YOUTUBE_SEARCH_URI = "https://www.googleapis.com/youtube/v3/search";
 const YOUTUBE_PARAMS = {
   key: process.env.REACT_APP_GOOGLE_API_KEY,
-  maxResults: 15,
+  maxResults: 12,
   part: "snippet",
   q: "surfing",
   type: "video"

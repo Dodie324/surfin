@@ -10,17 +10,17 @@ class VideoDetailPage extends Component {
     window.scrollTo(0, 0);
   }
 
-  renderHeroVideo = () => (
-    <div>
-      <iframe
-        src={`https://youtube.com/embed/${this.props.id}?autoplay=1`}
-        title={this.props.pageDetails.title}
-      />
-      <h2>{`${this.props.pageDetails.title} - ${
-        this.props.pageDetails.channelTitle
-      }`}</h2>
-    </div>
-  );
+  // renderHeroVideo = () => (
+  //   <div>
+  //     <iframe
+  //       src={`https://youtube.com/embed/${this.props.id}?autoplay=1`}
+  //       title={this.props.pageDetails.title}
+  //     />
+  //     <h2>{`${this.props.pageDetails.title} - ${
+  //       this.props.pageDetails.channelTitle
+  //     }`}</h2>
+  //   </div>
+  // );
 
   renderAuthorVidoes = () => (
     <div>
@@ -38,7 +38,7 @@ class VideoDetailPage extends Component {
   render() {
     return (
       <div>
-        {this.renderHeroVideo()}
+        {/* {this.renderHeroVideo()} */}
         {this.renderAuthorVidoes()}
         <CommentList comments={this.props.comments} />
       </div>
