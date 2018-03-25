@@ -1,46 +1,72 @@
-import React, { Component } from "react";
+import React, { Component, Fragment } from "react";
 import { connect } from "react-redux";
 import PropTypes from "prop-types";
+import styled, { css } from "styled-components";
+import { BaseLayout, BaseListStyle } from "../../style";
 
 import { loadVideoDetailPage } from "../../store/ducks/pageDetails";
-import { CommentList, VideoListItem } from "../../components";
+import { CommentListItem, HeroVideo, VideoListItem } from "../../components";
+
+const StyledHeader = styled.h5`
+  ${BaseLayout}
+  font-style: italic;
+  padding-top: 1em;
+`;
+
+const AuthorVideosContainer = styled.div`
+  ${BaseLayout}
+  ${BaseListStyle}
+  border-bottom: 1px solid #ccc;
+`;
+
+const CommentsContainer = styled.div`
+  ${BaseLayout}
+  margin-bottom: 1em;
+`;
 
 class VideoDetailPage extends Component {
   componentDidMount() {
     window.scrollTo(0, 0);
   }
 
-  // renderHeroVideo = () => (
-  //   <div>
-  //     <iframe
-  //       src={`https://youtube.com/embed/${this.props.id}?autoplay=1`}
-  //       title={this.props.pageDetails.title}
-  //     />
-  //     <h2>{`${this.props.pageDetails.title} - ${
-  //       this.props.pageDetails.channelTitle
-  //     }`}</h2>
-  //   </div>
-  // );
-
   renderAuthorVidoes = () => (
-    <div>
-      {this.props.authorVideos.map(({ etag, id, snippet }) => (
-        <VideoListItem
-          id={id.videoId}
-          key={etag + Math.random()}
-          loadPage={this.props.loadVideoDetailPage}
-          snippet={snippet}
+    <Fragment>
+      <StyledHeader>Other videos from this author</StyledHeader>
+      <AuthorVideosContainer>
+        {this.props.authorVideos.map(({ etag, id, snippet }) => (
+          <VideoListItem
+            showDescription={false}
+            id={id.videoId}
+            key={etag + Math.random()}
+            loadPage={this.props.loadVideoDetailPage}
+            snippet={snippet}
+          />
+        ))}
+      </AuthorVideosContainer>
+    </Fragment>
+  );
+
+  renderComments = () => (
+    <CommentsContainer>
+      {this.props.comments.map(({ snippet: { topLevelComment } }) => (
+        <CommentListItem
+          comment={topLevelComment.snippet}
+          key={topLevelComment.etag}
         />
       ))}
-    </div>
+    </CommentsContainer>
   );
 
   render() {
     return (
       <div>
-        {/* {this.renderHeroVideo()} */}
+        <HeroVideo
+          id={{ videoId: this.props.id }}
+          mute={0}
+          snippet={this.props.pageDetails}
+        />
         {this.renderAuthorVidoes()}
-        <CommentList comments={this.props.comments} />
+        {this.renderComments()}
       </div>
     );
   }
@@ -61,4 +87,6 @@ VideoDetailPage.propTypes = {
   pageDetails: PropTypes.object
 };
 
-export default connect(mapStateToProps, { loadVideoDetailPage })(VideoDetailPage);
+export default connect(mapStateToProps, { loadVideoDetailPage })(
+  VideoDetailPage
+);

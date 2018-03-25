@@ -7,7 +7,7 @@ const VideoListItemContainer = styled.div`
   display: block;
   margin: 0.5em 0;
   padding: 0 0.5em;
-  width: 16.6666666667%;
+  width: 18%;
 `;
 
 const Thumbnail = styled.img`
@@ -42,7 +42,7 @@ const Overview = styled.p`
   margin: 0.5em 0;
 `
 
-const VideoListItem = ({ id, loadPage, snippet }) => {
+const VideoListItem = ({ id, loadPage, showDescription = true, snippet }) => {
   const { description, thumbnails, title } = snippet;
 
   return (
@@ -52,13 +52,14 @@ const VideoListItem = ({ id, loadPage, snippet }) => {
       </div>
       <Description>
         <Title>{title.toUpperCase()}</Title>
-        <Overview>{description}</Overview>
+        {showDescription && <Overview>{description}</Overview>}
       </Description>
     </VideoListItemContainer>
   );
 };
 
 VideoListItem.propTypes = {
+  showDescription: PropTypes.bool,
   id: PropTypes.string.isRequired,
   loadPage: PropTypes.func,
   snippet: PropTypes.object.isRequired

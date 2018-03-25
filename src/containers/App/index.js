@@ -17,6 +17,13 @@ const StyledMessage = styled.div`
   text-transform: uppercase;
 `;
 
+const Placeholder = styled.div`
+  background-color: black;
+  height: 568px;
+  width: 100%;
+  padding-top: 6em;
+`;
+
 class App extends Component {
   componentDidMount() {
     this.props.fetchVideos();
@@ -33,30 +40,29 @@ class App extends Component {
       case totalResults === 0:
         return <StyledMessage>No videos found</StyledMessage>;
       case videos.length > 0:
+        const firstHit = this.props.videos[0];
         const InfiniteVideoList = withInfiniteScroll(VideoList);
         return (
           <Fragment>
+            <HeroVideo {...firstHit} />
             <Filters />
             <InfiniteVideoList videos={videos} />
           </Fragment>
         );
       default:
-        return <div>Hold on, dude. Fetching some gnarly vids</div>;
+        return (
+          <Fragment>
+            <Placeholder />
+            <div>Hold on, dude. Fetching some gnarly vids</div>
+          </Fragment>
+        );
     }
   };
 
   render() {
-    let videoData;
-    if (this.props.showDetails) {
-      videoData = { id: { videoId: this.props.id }, snippet: this.props.pageDetails };
-    } else {
-      videoData = this.props.videos[0];
-    }
-
     return (
       <AppContainer>
         <Header isDetailPage={this.props.showDetails} />
-        <HeroVideo {...videoData} />
         {this.renderComponent()}
       </AppContainer>
     );

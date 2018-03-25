@@ -12,7 +12,7 @@ const HeroContainer = styled.div`
 
 const Iframe = styled.iframe`
   border-width: 0;
-  height: 400px;
+  height: 350px;
   width: 100%;
 `;
 
@@ -23,8 +23,9 @@ const StyledH2 = styled.h2`
 `;
 
 const Placeholder = HeroContainer.extend`
-  width: 100%;
+  background-color: black;
   height: 568px;
+  width: 100%;
 `;
 
 const HeroVideo = ({ id, mute = 1, snippet }) => {
@@ -42,7 +43,7 @@ const HeroVideo = ({ id, mute = 1, snippet }) => {
         </HeroContainer>
       );
     } else {
-      return <Placeholder />;
+      return <Placeholder />
     }
   };
 
