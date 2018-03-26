@@ -8,20 +8,18 @@ import { loadVideoDetailPage } from "../../store/ducks/pageDetails";
 import { CommentListItem, HeroVideo, VideoListItem } from "../../components";
 
 const StyledHeader = styled.h5`
-  ${BaseLayout}
-  font-style: italic;
+  ${BaseLayout} font-style: italic;
   padding-top: 1em;
 `;
 
 const AuthorVideosContainer = styled.div`
-  ${BaseLayout}
-  ${BaseListStyle}
+  ${BaseLayout} ${BaseListStyle}
   border-bottom: 1px solid #ccc;
 `;
 
 const CommentsContainer = styled.div`
-  ${BaseLayout}
-  margin-bottom: 1em;
+  ${BaseLayout} margin-bottom: 1em;
+  max-width: 850px;
 `;
 
 class VideoDetailPage extends Component {
@@ -48,6 +46,8 @@ class VideoDetailPage extends Component {
 
   renderComments = () => (
     <CommentsContainer>
+      <StyledHeader>{this.props.comments.length === 1 ? '1 comment' :
+        `${this.props.comments.length} comments`}</StyledHeader>
       {this.props.comments.map(({ snippet: { topLevelComment } }) => (
         <CommentListItem
           comment={topLevelComment.snippet}
@@ -58,13 +58,10 @@ class VideoDetailPage extends Component {
   );
 
   render() {
+    const { pageDetails, videoId } = this.props;
     return (
       <div>
-        <HeroVideo
-          id={{ videoId: this.props.id }}
-          mute={0}
-          snippet={this.props.pageDetails}
-        />
+        <HeroVideo id={{ videoId }} mute={0} snippet={pageDetails} />
         {this.renderAuthorVidoes()}
         {this.renderComments()}
       </div>
@@ -75,7 +72,7 @@ class VideoDetailPage extends Component {
 const mapStateToProps = ({ pageDetails }) => ({
   authorVideos: pageDetails.authorVideos,
   comments: pageDetails.comments,
-  id: pageDetails.videoId,
+  videoId: pageDetails.videoId,
   pageDetails: pageDetails.videoPageDetails
 });
 

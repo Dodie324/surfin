@@ -9,3 +9,15 @@ export const BaseListStyle = `
   justify-content: center;
   padding-top: 1em;
 `;
+
+export const BaseMessageStyle = `
+  align-items: center;
+  border: 1px solid #ccc;
+  border-radius: 3px;
+  display: flex;
+  font-size: .75em;
+  justify-content: center;
+  margin-bottom: 1em;
+  padding: 1em;
+  text-transform: uppercase;
+`;

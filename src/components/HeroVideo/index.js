@@ -1,5 +1,5 @@
 import React from "react";
-import PropType from "prop-types";
+import PropTypes from "prop-types";
 import styled from "styled-components";
 
 const HeroContainer = styled.div`
@@ -13,7 +13,7 @@ const HeroContainer = styled.div`
 const Iframe = styled.iframe`
   border-width: 0;
   height: 350px;
-  width: 100%;
+  width: 50%;
 `;
 
 const StyledH2 = styled.h2`
@@ -22,37 +22,26 @@ const StyledH2 = styled.h2`
   margin-bottom: 1em;
 `;
 
-const Placeholder = HeroContainer.extend`
-  background-color: black;
-  height: 568px;
-  width: 100%;
-`;
-
 const HeroVideo = ({ id, mute = 1, snippet }) => {
-  const renderHeroVideo = () => {
-    if (id && id.videoId) {
-      return (
-        <HeroContainer>
-          <Iframe
-            src={`https://youtube.com/embed/${
-              id.videoId
-            }?autoplay=1&rel=0&mute=${mute}`}
-            title={snippet.title}
-          />
-          <StyledH2>{`${snippet.title} — ${snippet.channelTitle}`}</StyledH2>
-        </HeroContainer>
-      );
-    } else {
-      return <Placeholder />
-    }
-  };
+  const renderHeroVideo = () => (
+    <HeroContainer>
+      <Iframe
+        src={`https://youtube.com/embed/${
+          id.videoId
+        }?autoplay=1&rel=0&mute=${mute}`}
+        title={snippet.title}
+      />
+      <StyledH2>{`${snippet.title} — ${snippet.channelTitle}`}</StyledH2>
+    </HeroContainer>
+  );
 
   return renderHeroVideo();
 };
 
-HeroVideo.propType = {
-  id: PropType.string.isRequired,
-  snippet: PropType.object.isRequired
+HeroVideo.propTypes = {
+  id: PropTypes.object.isRequired,
+  mute: PropTypes.number,
+  snippet: PropTypes.object.isRequired
 };
 
 export default HeroVideo;

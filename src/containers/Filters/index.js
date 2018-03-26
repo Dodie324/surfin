@@ -3,6 +3,7 @@ import PropTypes from "prop-types";
 import { connect } from "react-redux";
 import styled from "styled-components";
 import { Filter as FilterIcon } from "react-feather";
+import { BaseLayout } from "../../style";
 
 import { fetchVideos } from "../../store/ducks/videos";
 
@@ -34,19 +35,25 @@ const FiltersContainer = styled.div`
 `;
 
 const Menu = styled.div`
+  ${BaseLayout} align-items: center;
   display: flex;
-  justify-content: flex-end;
+  justify-content: ${props => (!props.children[0] ? "flex-end" : "flex-start")};
+`;
+
+const CurrentFilter = styled.span`
+  flex: 1;
+  font-size: 0.85em;
+  text-transform: uppercase;
 `;
 
 const IconContainer = styled.div`
   align-items: center;
   display: flex;
   cursor: pointer;
-  margin-right: 2em;
 `;
 
 const StyledSpan = styled.span`
-  font-size: .85em;
+  font-size: 0.85em;
   text-transform: uppercase;
 `;
 
@@ -102,10 +109,15 @@ class Filters extends Component {
 
   render() {
     return (
-      <FiltersContainer>
+      <FiltersContainer key={1}>
         <Menu>
+          {!this.state.showFilters && (
+            <CurrentFilter>{`Current filter: ${
+              this.props.filter.split(",")[1]
+            }`}</CurrentFilter>
+          )}
           <IconContainer onClick={this.toggleFilters}>
-            <FilterIcon/>
+            <FilterIcon />
             <StyledSpan>Filters</StyledSpan>
           </IconContainer>
         </Menu>
@@ -116,11 +128,13 @@ class Filters extends Component {
 }
 
 const mapStateToProps = ({ surfVideos }) => ({
+  filter: surfVideos.filter,
   query: surfVideos.query
 });
 
 Filters.propTypes = {
   fetchVideos: PropTypes.func.isRequired,
+  filter: PropTypes.string,
   query: PropTypes.string.isRequired
 };
 

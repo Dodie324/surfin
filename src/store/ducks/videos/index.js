@@ -3,6 +3,7 @@ import axios from "axios";
 const CLEAR_VIDEOS = "CLEAR_VIDEOS";
 const ERROR = "ERROR";
 const FETCH_VIDEO_DATA = "FETCH_VIDEO_DATA";
+const LOADING_ADDITIONAL_VIDEOS = "LOADING_ADDITIONAL_VIDEOS";
 const LOADING_VIDEOS = "LOADING_VIDEOS";
 
 const YOUTUBE_SEARCH_URI = "https://www.googleapis.com/youtube/v3/search";
@@ -15,7 +16,8 @@ const YOUTUBE_PARAMS = {
 };
 
 const INITIAL_STATE = {
-  isLoading: false,
+  loadingInitial: true,
+  loadingAdditional: false,
   nextPageToken: "",
   filter: "order,relevance",
   query: "",
@@ -25,6 +27,7 @@ const INITIAL_STATE = {
 
 export const fetchVideos = (query = "", filter = "order,relevance") => async dispatch => {
   dispatch({ type: CLEAR_VIDEOS });
+  dispatch({ type: LOADING_VIDEOS });
 
   const filterArray = filter.split(",");
   const filterKey = filterArray[0];
@@ -58,7 +61,7 @@ export const fetchVideos = (query = "", filter = "order,relevance") => async dis
 };
 
 export const fetchAdditionalVideos = () => async (dispatch, getState) => {
-  dispatch({ type: LOADING_VIDEOS });
+  dispatch({ type: LOADING_ADDITIONAL_VIDEOS });
 
   const { nextPageToken, filter, query } = getState().surfVideos;
   const filterArray = filter.split(",");
@@ -100,7 +103,8 @@ export default function(state = INITIAL_STATE, action) {
     case FETCH_VIDEO_DATA:
       const updatedState = {
         ...state,
-        isLoading: false,
+        loadingAdditional: false,
+        loadingInitial: false,
         nextPageToken: action.payload.nextPageToken,
         totalResults: action.payload.totalResults,
         videos: [...state.videos, ...action.payload.videos]
@@ -115,8 +119,10 @@ export default function(state = INITIAL_STATE, action) {
       }
 
       return updatedState;
+    case LOADING_ADDITIONAL_VIDEOS:
+      return { ...state, loadingAdditional: true };
     case LOADING_VIDEOS:
-      return { ...state, isLoading: true };
+      return { ...state, loadingInitial: true };
     default:
       return state;
   }

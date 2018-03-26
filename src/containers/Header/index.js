@@ -2,7 +2,7 @@ import React, { Component } from "react";
 import PropTypes from "prop-types";
 import { connect } from "react-redux";
 import styled from "styled-components";
-import logo from "./logo.svg";
+import logo from "../../logo.svg";
 import { fetchVideos } from "../../store/ducks/videos";
 import { returnToVideoList } from "../../store/ducks/pageDetails";
 import { NavButton, SearchBar } from "../../components";

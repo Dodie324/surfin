@@ -2,20 +2,18 @@ import React, { Component } from "react";
 import { connect } from "react-redux";
 import PropTypes from "prop-types";
 import styled from "styled-components";
-import { BaseLayout, BaseListStyle } from "../../style";
+import { BaseLayout, BaseListStyle, BaseMessageStyle } from "../../style";
 
 import { loadVideoDetailPage } from "../../store/ducks/pageDetails";
+import { saveScrollPosition } from "../../store/ducks/scrollEvent";
 import { VideoListItem } from "../../components";
 
 const VideoListContainer = styled.div`
-  ${BaseLayout}
-  ${BaseListStyle}
+  ${BaseLayout} ${BaseListStyle};
 `;
 
 const StyledMessage = styled.div`
-  font-size: .75em;
-  text-align: center;
-  text-transform: uppercase;
+  ${BaseMessageStyle};
 `;
 
 class VideoList extends Component {
@@ -24,18 +22,28 @@ class VideoList extends Component {
     window.scrollTo(0, position);
   }
 
+  loadPage = (id, snippet) => {
+    this.props.saveScrollPosition(window.pageYOffset);
+    this.props.loadVideoDetailPage(id, snippet);
+  };
+
   renderMessageOrNot = () => {
     if (!this.props.token) {
-      return <StyledMessage>End of results</StyledMessage>
+      return <StyledMessage>End of results</StyledMessage>;
     } else if (this.props.isLoading) {
       return <StyledMessage>Fetching more videos, brah</StyledMessage>;
     } else {
       return null;
     }
-  }
+  };
 
   render() {
-    if (this.props.error) return <div>{`Bummer, dude. There seems to be an issue. ${this.props.error}`}</div>;
+    if (this.props.error)
+      return (
+        <div>{`Bummer, dude. There seems to be an issue. ${
+          this.props.error
+        }`}</div>
+      );
 
     return (
       <VideoListContainer>
@@ -43,7 +51,7 @@ class VideoList extends Component {
           <VideoListItem
             id={id.videoId}
             key={etag + Math.random()}
-            loadPage={this.props.loadVideoDetailPage}
+            loadPage={this.loadPage}
             snippet={snippet}
           />
         ))}
@@ -53,20 +61,20 @@ class VideoList extends Component {
   }
 }
 
-const mapStateToProps = ({ scrollEvent, surfVideos }) => ({
-  error: surfVideos.error,
-  position: scrollEvent.position
+const mapStateToProps = ({ surfVideos }) => ({
+  error: surfVideos.error
 });
 
 VideoList.propTypes = {
   error: PropTypes.string,
   isLoading: PropTypes.bool.isRequired,
   loadVideoDetailPage: PropTypes.func.isRequired,
+  saveScrollPosition: PropTypes.func.isRequired,
   token: PropTypes.string,
-  position: PropTypes.number.isRequired,
   videos: PropTypes.arrayOf(PropTypes.object).isRequired
 };
 
-export default connect(mapStateToProps, { loadVideoDetailPage })(
-  VideoList
-);
+export default connect(mapStateToProps, {
+  loadVideoDetailPage,
+  saveScrollPosition
+})(VideoList);
