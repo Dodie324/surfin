@@ -1,7 +1,7 @@
 import React, { Component, Fragment } from "react";
 import { connect } from "react-redux";
 import PropTypes from "prop-types";
-import styled, { css } from "styled-components";
+import styled from "styled-components";
 import { BaseLayout, BaseListStyle } from "../../style";
 
 import { loadVideoDetailPage } from "../../store/ducks/pageDetails";

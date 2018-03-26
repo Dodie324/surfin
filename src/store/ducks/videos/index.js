@@ -21,17 +21,18 @@ const INITIAL_STATE = {
   nextPageToken: "",
   filter: "order,relevance",
   query: "",
+  remainingCount: null,
   totalResults: null,
   videos: []
 };
+
+const stripFilter = f => f.split(",");
 
 export const fetchVideos = (query = "", filter = "order,relevance") => async dispatch => {
   dispatch({ type: CLEAR_VIDEOS });
   dispatch({ type: LOADING_VIDEOS });
 
-  const filterArray = filter.split(",");
-  const filterKey = filterArray[0];
-  const filterValue = filterArray[1];
+  const [filterKey, filterValue] = stripFilter(filter);
 
   try {
     const { data } = await axios.get(YOUTUBE_SEARCH_URI, {
@@ -48,6 +49,7 @@ export const fetchVideos = (query = "", filter = "order,relevance") => async dis
         filter,
         nextPageToken: data.nextPageToken,
         query,
+        remainingCount: data.pageInfo.totalResults - data.pageInfo.resultsPerPage,
         totalResults: data.pageInfo.totalResults,
         videos: data.items
       }
@@ -63,16 +65,16 @@ export const fetchVideos = (query = "", filter = "order,relevance") => async dis
 export const fetchAdditionalVideos = () => async (dispatch, getState) => {
   dispatch({ type: LOADING_ADDITIONAL_VIDEOS });
 
-  const { nextPageToken, filter, query } = getState().surfVideos;
-  const filterArray = filter.split(",");
-  const filterKey = filterArray[0];
-  const filterValue = filterArray[1];
+  const { nextPageToken, filter, query, remainingCount } = getState().surfVideos;
+  const [filterKey, filterValue] = stripFilter(filter)
+  const maxResults = remainingCount < 30 ? remainingCount : 30;
 
   try {
     const { data } = await axios.get(YOUTUBE_SEARCH_URI, {
       params: {
         ...YOUTUBE_PARAMS,
         [filterKey]: filterValue,
+        maxResults,
         pageToken: nextPageToken,
         q: (YOUTUBE_PARAMS.q + " " + query).trim()
       }
@@ -82,6 +84,7 @@ export const fetchAdditionalVideos = () => async (dispatch, getState) => {
       type: FETCH_VIDEO_DATA,
       payload: {
         nextPageToken: data.nextPageToken,
+        remainingCount: remainingCount - data.pageInfo.resultsPerPage,
         totalResults: data.pageInfo.totalResults,
         videos: data.items
       }
@@ -106,6 +109,7 @@ export default function(state = INITIAL_STATE, action) {
         loadingAdditional: false,
         loadingInitial: false,
         nextPageToken: action.payload.nextPageToken,
+        remainingCount: action.payload.remainingCount,
         totalResults: action.payload.totalResults,
         videos: [...state.videos, ...action.payload.videos]
       }

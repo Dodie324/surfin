@@ -4,7 +4,6 @@ import { connect } from "react-redux";
 import styled from "styled-components";
 import { fetchVideos } from "../../store/ducks/videos";
 import { Header, VideoListContainer, VideoDetailPage } from "..";
-import { HeroVideo } from "../../components";
 
 const AppContainer = styled.div`
   background-color; #eef1f2;

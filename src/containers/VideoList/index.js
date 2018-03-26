@@ -1,4 +1,4 @@
-import React, { Component } from "react";
+import React, { Component, Fragment } from "react";
 import { connect } from "react-redux";
 import PropTypes from "prop-types";
 import styled from "styled-components";
@@ -13,7 +13,7 @@ const VideoListContainer = styled.div`
 `;
 
 const StyledMessage = styled.div`
-  ${BaseMessageStyle};
+  ${BaseLayout} ${BaseMessageStyle};
 `;
 
 class VideoList extends Component {
@@ -28,7 +28,7 @@ class VideoList extends Component {
   };
 
   renderMessageOrNot = () => {
-    if (!this.props.token) {
+    if (this.props.remainingCount <= 0) {
       return <StyledMessage>End of results</StyledMessage>;
     } else if (this.props.isLoading) {
       return <StyledMessage>Fetching more videos, brah</StyledMessage>;
@@ -38,39 +38,43 @@ class VideoList extends Component {
   };
 
   render() {
-    if (this.props.error)
+    if (this.props.error) {
       return (
-        <div>{`Bummer, dude. There seems to be an issue. ${
+        <StyledMessage>{`Bummer, dude. There seems to be an issue. ${
           this.props.error
-        }`}</div>
+        }`}</StyledMessage>
       );
+    }
 
     return (
-      <VideoListContainer>
-        {this.props.videos.map(({ etag, id, snippet }) => (
-          <VideoListItem
-            id={id.videoId}
-            key={etag + Math.random()}
-            loadPage={this.loadPage}
-            snippet={snippet}
-          />
-        ))}
+      <Fragment>
+        <VideoListContainer>
+          {this.props.videos.map(({ etag, id, snippet }) => (
+            <VideoListItem
+              id={id.videoId}
+              key={etag + Math.random()}
+              loadPage={this.loadPage}
+              snippet={snippet}
+            />
+          ))}
+        </VideoListContainer>
         {this.renderMessageOrNot()}
-      </VideoListContainer>
+      </Fragment>
     );
   }
 }
 
 const mapStateToProps = ({ surfVideos }) => ({
-  error: surfVideos.error
+  error: surfVideos.error,
+  remainingCount: surfVideos.remainingCount
 });
 
 VideoList.propTypes = {
   error: PropTypes.string,
   isLoading: PropTypes.bool.isRequired,
   loadVideoDetailPage: PropTypes.func.isRequired,
+  remainingCount: PropTypes.number,
   saveScrollPosition: PropTypes.func.isRequired,
-  token: PropTypes.string,
   videos: PropTypes.arrayOf(PropTypes.object).isRequired
 };
 

@@ -45,6 +45,8 @@ const Overview = styled.p`
 const VideoListItem = ({ id, loadPage, showDescription = true, snippet }) => {
   const { description, thumbnails, title } = snippet;
 
+  if (!thumbnails.high.url.includes('hqdefault')) return null;
+
   return (
     <VideoListItemContainer id={id} onClick={() => loadPage(id, snippet)}>
       <div>
