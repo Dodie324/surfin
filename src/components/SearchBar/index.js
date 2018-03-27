@@ -10,7 +10,7 @@ const SearchBarContainer = styled.div`
 `;
 
 const StyledInput = styled.input`
-  background-color: rgba(255,255,255,0.125);
+  background-color: rgba(255, 255, 255, 0.125);
   border: none;
   box-shadow: inset 0 0 1px #ccc;
   color: #fff;
@@ -38,7 +38,7 @@ const ButtonContainer = styled.div`
   width: 65px;
 
   &:hover {
-    box-shadow: 0 1px 0 rgba(0, 0, 0, 0.10);
+    box-shadow: 0 1px 0 rgba(0, 0, 0, 0.1);
   }
 `;
 
@@ -49,14 +49,37 @@ const Button = styled(SearchIcon)`
   width: 20px;
 `;
 
-const SearchBar = ({ onChange, onClick, query }) => (
-  <SearchBarContainer>
-    <StyledInput onChange={e => onChange(e.target.value)} placeholder="Search" />
-    <ButtonContainer onClick={() => onClick(query)}>
-      <Button />
-    </ButtonContainer>
-  </SearchBarContainer>
-);
+const onEnter = fn => {
+  return e => {
+    if (e.keyCode === 13) fn();
+  };
+};
+
+const SearchBar = ({ onChange, onClick, onSubmit, query }) => {
+  const handleKeyDown = onEnter(onSubmit);
+  const handleOnSubmit = e => {
+    e.preventDefault();
+    onSubmit();
+  };
+
+  return (
+    <form onSubmit={handleOnSubmit}>
+      <SearchBarContainer>
+        <StyledInput
+          onChange={e => onChange(e.target.value)}
+          placeholder="Search"
+          tabIndex={0}
+        />
+        <ButtonContainer
+          onClick={() => onClick(query)}
+          onKeyDown={handleKeyDown}
+        >
+          <Button />
+        </ButtonContainer>
+      </SearchBarContainer>
+    </form>
+  );
+};
 
 SearchBar.propTypes = {
   onChange: PropTypes.func.isRequired,

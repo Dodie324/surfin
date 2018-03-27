@@ -42,7 +42,9 @@ class Header extends Component {
   handleOnClick = () => {
     this.props.returnToVideoList();
     window.scrollTo(0, 0);
-  }
+  };
+
+  handleOnSubmit = () => this.props.fetchVideos(this.state.query);
 
   fetchVideos = () => this.props.fetchVideos(this.state.query);
 
@@ -59,6 +61,7 @@ class Header extends Component {
         <SearchBar
           onChange={this.handleOnChange}
           onClick={this.fetchVideos}
+          onSubmit={this.handleOnSubmit}
           query={this.state.query}
         />
       </HeaderContainer>
