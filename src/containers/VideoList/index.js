@@ -9,7 +9,7 @@ import { saveScrollPosition } from "../../store/ducks/scrollEvent";
 import { VideoListItem } from "../../components";
 
 const VideoListContainer = styled.div`
-  ${BaseLayout} ${BaseListStyle};
+  ${BaseListStyle};
 `;
 
 const StyledMessage = styled.div`
@@ -18,8 +18,8 @@ const StyledMessage = styled.div`
 
 class VideoList extends Component {
   componentDidMount() {
-    const { position } = this.props;
-    window.scrollTo(0, position);
+    const { scrollPos } = this.props;
+    window.scrollTo(0, scrollPos);
   }
 
   loadPage = (id, snippet) => {
@@ -64,9 +64,11 @@ class VideoList extends Component {
   }
 }
 
-const mapStateToProps = ({ surfVideos }) => ({
+const mapStateToProps = ({ scrollEvent, surfVideos }) => ({
   error: surfVideos.error,
-  remainingCount: surfVideos.remainingCount
+  isLoading: surfVideos.loadingAdditional,
+  remainingCount: surfVideos.remainingCount,
+  scrollPos: scrollEvent.position
 });
 
 VideoList.propTypes = {
@@ -75,6 +77,7 @@ VideoList.propTypes = {
   loadVideoDetailPage: PropTypes.func.isRequired,
   remainingCount: PropTypes.number,
   saveScrollPosition: PropTypes.func.isRequired,
+  scrollPos: PropTypes.number,
   videos: PropTypes.arrayOf(PropTypes.object).isRequired
 };
 

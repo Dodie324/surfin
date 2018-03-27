@@ -4,6 +4,7 @@ export const BaseLayout = `
 `;
 
 export const BaseListStyle = `
+  ${BaseLayout}
   display: flex;
   flex-flow: wrap;
   justify-content: center;

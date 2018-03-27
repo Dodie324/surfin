@@ -1,6 +1,8 @@
 import axios from "axios";
 
-const RENDER_PAGE_DETAILS = "RENDER_PAGE_DETAILS";
+const LOAD_ADDITIONAL_COMMENTS = "LOAD_ADDITIONAL_COMMENTS";
+const LOAD_PAGE_DETAILS = "LOAD_PAGE_DETAILS";
+const LOADING_COMMENTS = "LOADING_COMMENTS";
 const RETURN_TO_VIDEOS = "RETURN_TO_VIDEOS";
 
 const YOUTUBE_PARAMS = {
@@ -11,14 +13,14 @@ const YOUTUBE_PARAMS = {
 const apiURI = {
   comments: "https://www.googleapis.com/youtube/v3/commentThreads",
   videos: "https://www.googleapis.com/youtube/v3/search"
-}
+};
 
 const INITIAL_STATE = {
-  authorVideos: [],
-  comments: [],
+  authorVideos: {},
+  comments: {},
+  loadAdditionalComments: false,
   showDetails: false,
-  videoPageDetails: null,
-  videoId: null,
+  nextPageToken: "",
 };
 
 function timeElapsed(startTime) {
@@ -27,10 +29,10 @@ function timeElapsed(startTime) {
   return Math.round(timeDiff);
 }
 
-const memoizedData = (field) => {
+const memoizedData = field => {
   let loadedAt = new Date();
   let cache = {};
-  return async (id) => {
+  return async id => {
     const timeDiff = timeElapsed(loadedAt);
 
     // return cache if pressent and the request is made in less than a minute
@@ -40,7 +42,7 @@ const memoizedData = (field) => {
       loadedAt = new Date();
 
       let params = {};
-      if (field === 'comments') {
+      if (field === "comments") {
         params = {
           ...YOUTUBE_PARAMS,
           videoId: id
@@ -53,32 +55,32 @@ const memoizedData = (field) => {
         };
       }
 
-      let items;
+      let res;
       try {
         const { data } = await axios.get(apiURI[field], { params });
-        items = data.items || [];
-      } catch(_) {
-        items = [];
+        res = data || [];
+      } catch (_) {
+        res = null;
       }
 
-      cache[id] = items;
-      return items;
+      cache[id] = res;
+      return res;
     }
-  }
-}
+  };
+};
 
 const cachedComments = memoizedData("comments");
 const cachedAuthorVideos = memoizedData("videos");
 
-export const loadVideoDetailPage = (
-  videoId,
-  videoPageDetails
-) => async (dispatch, { pageDetails }) => {
+export const loadVideoDetailPage = (videoId, videoPageDetails) => async (
+  dispatch,
+  { pageDetails }
+) => {
   const comments = await cachedComments(videoId);
   const authorVideos = await cachedAuthorVideos(videoPageDetails.channelId);
 
   dispatch({
-    type: RENDER_PAGE_DETAILS,
+    type: LOAD_PAGE_DETAILS,
     payload: {
       authorVideos,
       comments,
@@ -88,19 +90,77 @@ export const loadVideoDetailPage = (
   });
 };
 
+const memoizedTokens = () => {
+  let initEtag = "";
+  let cachedTokens = {};
+  return (newEtag, token) => {
+    // clear cachedTokens when returning to existing video details page
+    if (newEtag === initEtag) cachedTokens = {};
+    if (initEtag === "") initEtag = newEtag;
+
+    if (token in cachedTokens) {
+      return undefined;
+    } else {
+      cachedTokens[token] = true;
+      return token;
+    }
+  };
+};
+
+const cachedTokens = memoizedTokens();
+
+export const fetchAdditionalComments = () => async (dispatch, getState) => {
+  dispatch({ type: LOADING_COMMENTS, payload: true });
+
+  const { comments, videoId } = getState().pageDetails;
+  const { etag, nextPageToken } = comments;
+  const params = {
+    ...YOUTUBE_PARAMS,
+    maxResults: 20,
+    videoId
+  };
+  const token = cachedTokens(etag, nextPageToken);
+
+  // prevent duplicate comments from rendering
+  if (token) {
+    params.pageToken = token;
+  } else {
+    dispatch({ type: LOADING_COMMENTS, payload: false });
+    return;
+  }
+
+  const { data } = await axios.get(apiURI["comments"], { params });
+
+  dispatch({
+    type: LOAD_ADDITIONAL_COMMENTS,
+    payload: { data }
+  });
+};
+
 export const returnToVideoList = () => ({ type: RETURN_TO_VIDEOS });
 
 export default function(state = INITIAL_STATE, action) {
   switch (action.type) {
-    case RENDER_PAGE_DETAILS:
+    case LOAD_ADDITIONAL_COMMENTS:
+      return {
+        ...state,
+        comments: {
+          ...action.payload.data,
+          items: [...state.comments.items, ...action.payload.data.items]
+        },
+        loadAdditionalComments: false
+      };
+    case LOAD_PAGE_DETAILS:
       return {
         ...state,
         ...action.payload,
         loadingDetails: false,
         showDetails: true
       };
+    case LOADING_COMMENTS:
+      return { ...state, loadAdditionalComments: action.payload };
     case RETURN_TO_VIDEOS:
-      return { ...state, showDetails: false };
+      return { ...state, showDetails: false, loadAdditionalComments: false };
     default:
       return state;
   }

@@ -22,38 +22,43 @@ const NoResults = styled.span`
 
 const InfiniteVideoList = withInfiniteScroll(VideoList);
 
-class VideoListContainer extends Component {
-  renderInfiniteList = () => {
+const VideoListContainer = ({ loadingInitial, totalResults, videos }) => {
+  const renderInfiniteList = () => {
     return (
       <InfiniteVideoList
-        isLoading={this.props.loadingAdditional}
-        position={this.props.scrollPos}
-        videos={this.props.videos}
+        type="Videos"
+        videos={videos}
       />
     );
   };
 
-  render() {
-    if (this.props.loadingInitial)
-      return <StyledMessage><span>Loading...</span></StyledMessage>;
-
-    if (this.props.totalResults === 0)
-      return <StyledMessage><NoResults>No videos found</NoResults></StyledMessage>;
-
+  if (loadingInitial)
     return (
-      <Fragment>
-        <HeroVideo {...this.props.videos[0]} />
-        <Filters />
-        {this.renderInfiniteList()}
-      </Fragment>
+      <StyledMessage>
+        <span>Loading...</span>
+      </StyledMessage>
     );
-  }
-}
+
+  if (totalResults === 0)
+    return (
+      <StyledMessage>
+        <NoResults>No videos found</NoResults>
+      </StyledMessage>
+    );
+
+  return (
+    <Fragment>
+      <HeroVideo {...videos[0]} />
+      <Filters />
+      {renderInfiniteList()}
+    </Fragment>
+  );
+};
 
 const mapStateToProps = ({ scrollEvent, surfVideos }) => ({
   loadingAdditional: surfVideos.loadingAdditional,
   loadingInitial: surfVideos.loadingInitial,
-  scrollPos: scrollEvent.position,
+
   totalResults: surfVideos.totalResults,
   videos: surfVideos.videos
 });

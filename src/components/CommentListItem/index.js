@@ -1,6 +1,7 @@
 import React from "react";
 import PropTypes from "prop-types";
 import styled, { css } from "styled-components";
+import { ThumbsUp as ThumbsUpIcon } from "react-feather";
 
 const Margin = css`
   margin: 0.25em 0;
@@ -35,8 +36,18 @@ const StyledP = styled.p`
   ${Margin} font-size: .75em;
 `;
 
+const StyledDiv = styled.div`
+  align-items: center;
+  display: flex;
+`;
+
 const StyledSpan = styled.span`
-  ${Margin} font-size: .75em;
+  font-size: .75em;
+  margin: .5em 0 .275em;
+`;
+
+const ThumbsUp = styled(ThumbsUpIcon)`
+  height: 15px;
 `;
 
 const CommentListItem = ({
@@ -49,7 +60,10 @@ const CommentListItem = ({
     <ContentContainer>
       <StyledH4>{authorDisplayName}</StyledH4>
       <StyledP>{textOriginal}</StyledP>
-      <StyledSpan>{likeCount}</StyledSpan>
+      <StyledDiv>
+        <ThumbsUp />
+        <StyledSpan>{likeCount}</StyledSpan>
+      </StyledDiv>
     </ContentContainer>
   </CommentListItemContainer>
 );

@@ -2,6 +2,7 @@ import React from "react";
 import PropTypes from "prop-types";
 import { connect } from "react-redux";
 import { fetchAdditionalVideos } from "../store/ducks/videos";
+import { fetchAdditionalComments } from "../store/ducks/pageDetails";
 import throttle from "lodash/throttle";
 
 const withInfiniteScroll = Component => {
@@ -13,15 +14,17 @@ const withInfiniteScroll = Component => {
       window.removeEventListener("scroll", this.onScroll, false);
 
     onScroll = throttle(() => {
+      const loading = this.props[`loading${this.props.type}`];
+
       if (
         window.innerHeight + window.scrollY >=
           document.body.offsetHeight - 100 &&
-        !this.props.isLoading &&
-        this.props.token
+        !loading
       ) {
-        this.props.fetchAdditionalVideos();
+        const func = `fetchAdditional${this.props.type}`;
+        this.props[func]();
       }
-    }, 300);
+    }, 500);
 
     render() {
       const { fetchAdditionalVideos, ...props } = this.props;
@@ -29,20 +32,22 @@ const withInfiniteScroll = Component => {
     }
   }
 
-  const mapStateToProps = ({ surfVideos }) => ({
-    isLoading: surfVideos.loadingAdditional,
-    token: surfVideos.nextPageToken
+  const mapStateToProps = ({ pageDetails, surfVideos }) => ({
+    loadingComments: pageDetails.loadAdditionalComments,
+    loadingVideos: surfVideos.loadingAdditional
   });
 
   WithInfiniteScroll.propTypes = {
-    isLoading: PropTypes.bool.isRequired,
-    fetchAdditionalVideos: PropTypes.func.isRequired,
-    saveScrollPosition: PropTypes.func,
-    token: PropTypes.string
+    loadingComments: PropTypes.bool,
+    loadingVideos: PropTypes.bool,
+    fetchAdditionalComments: PropTypes.func,
+    fetchAdditionalVideos: PropTypes.func,
+    type: PropTypes.string.isRequired
   };
 
   return connect(mapStateToProps, {
-    fetchAdditionalVideos,
+    fetchAdditionalComments,
+    fetchAdditionalVideos
   })(WithInfiniteScroll);
 };
 
