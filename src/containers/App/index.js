@@ -1,21 +1,12 @@
 import React, { Component } from "react";
 import PropTypes from "prop-types";
 import { connect } from "react-redux";
-import styled from "styled-components";
+
 import { fetchVideos } from "../../store/ducks/videos";
 import { Header, VideoListContainer, VideoDetailPage } from "..";
 
-const AppContainer = styled.div`
-  background-color; #eef1f2;
-`;
-
-const Placeholder = styled.div`
-  background-color: black;
-  height: 519px;
-  position: absolute;
-  width: 100%;
-  z-index: -1;
-`;
+import { Loader, LoaderContainer, Placeholder } from "./styles";
+import dab from "../../style/dab.png";
 
 class App extends Component {
   componentWillMount() {
@@ -31,22 +22,31 @@ class App extends Component {
   };
 
   render() {
+    if (this.props.isLoading) {
+      return (
+        <LoaderContainer>
+          <Loader src={dab} />
+        </LoaderContainer>
+      );
+    }
+
     return (
-      <AppContainer>
+      <div>
         <Header isDetailPage={this.props.showDetails} />
         <Placeholder />
         {this.renderComponent()}
-      </AppContainer>
+      </div>
     );
   }
-};
+}
 
-const mapStateToProps = ({ pageDetails }) => ({
+const mapStateToProps = ({ loader, pageDetails }) => ({
   showDetails: pageDetails.showDetails,
+  isLoading: loader.loading
 });
 
 App.propTypes = {
-  showDetails: PropTypes.bool.isRequired,
+  showDetails: PropTypes.bool.isRequired
 };
 
 export default connect(mapStateToProps, { fetchVideos })(App);

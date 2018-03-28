@@ -1,0 +1,23 @@
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  height: auto;
+  margin: 0;
+  overflow-x: hidden;
+  overflow-y: auto;
+  width: 100%;
+}
+
+body {
+  background-color: #eef1f2;
+  font-family: "Lato", Helvetica, sans-serif;
+}
+
+#root {
+  position: relative;
+}

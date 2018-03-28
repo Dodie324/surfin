@@ -1,26 +1,7 @@
 import React from "react";
 import PropTypes from "prop-types";
-import styled from "styled-components";
 
-const HeroContainer = styled.div`
-  align-items: center;
-  background-color: black;
-  display: flex;
-  flex-direction: column;
-  padding-top: 6em;
-`;
-
-const Iframe = styled.iframe`
-  border-width: 0;
-  height: 350px;
-  width: 50%;
-`;
-
-const StyledH2 = styled.h2`
-  color: white;
-  font-weight: lighter;
-  margin-bottom: 1em;
-`;
+import { HeroContainer, Iframe, StyledH2 } from "./styles";
 
 const HeroVideo = ({ id, mute = 1, snippet }) => {
   const renderHeroVideo = () => (

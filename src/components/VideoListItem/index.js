@@ -1,70 +1,41 @@
 import React from "react";
 import PropTypes from "prop-types";
-import styled, { css } from "styled-components";
 
-const VideoListItemContainer = styled.div`
-  cursor: pointer;
-  display: block;
-  margin: 0.5em 0;
-  padding: 0 0.5em;
-  width: 18%;
-`;
+import {
+  Description,
+  Overview,
+  Title,
+  Thumbnail,
+  VideoListItemContainer
+} from "./styles";
 
-const Thumbnail = styled.img`
-  height: auto;
-  margin-right: 0.5em;
-  width: 100%;
-`;
-
-const Description = styled.div`
-  padding: .5em 0;
-`;
-
-const WebkitBox = css`
-  -webkit-box-orient: verticali;
-  display: -webkit-box;
-  -webkit-line-clamp: 3;
-  overflow: hidden;
-`;
-
-const Title = styled.h5`
-  ${WebkitBox}
-  height: 48px;
-  margin: 0;
-`;
-
-const Overview = styled.p`
-  ${WebkitBox}
-  color: rgba(0, 0, 0, 0.6);
-  font-size: 0.75em;
-  height: 60px;
-  line-height: 20px;
-  margin: 0.5em 0;
-`
-
-const VideoListItem = ({ id, loadPage, showDescription = true, snippet }) => {
+const VideoListItem = ({ id, loadPage, isVideoDetail, snippet }) => {
   const { description, thumbnails, title } = snippet;
 
-  if (!thumbnails.high.url.includes('hqdefault')) return null;
+  if (!thumbnails.high.url.includes("hqdefault")) return null;
 
   return (
-    <VideoListItemContainer id={id} onClick={() => loadPage(id, snippet)}>
+    <VideoListItemContainer isVideoDetail={isVideoDetail} onClick={() => loadPage(id, snippet)}>
       <div>
         <Thumbnail alt={title} src={thumbnails.high.url} />
       </div>
       <Description>
         <Title>{title.toUpperCase()}</Title>
-        {showDescription && <Overview>{description}</Overview>}
+        {!isVideoDetail && <Overview>{description}</Overview>}
       </Description>
     </VideoListItemContainer>
   );
 };
 
 VideoListItem.propTypes = {
-  showDescription: PropTypes.bool,
   id: PropTypes.string.isRequired,
+  isVideoDetail: PropTypes.bool,
   loadPage: PropTypes.func,
   snippet: PropTypes.object.isRequired
 };
+
+VideoListItem.defaultProps = {
+  isVideoDetail: false
+}
 
 export default VideoListItem;

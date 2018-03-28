@@ -1,31 +1,17 @@
 import React, { Component, Fragment } from "react";
 import { connect } from "react-redux";
 import PropTypes from "prop-types";
-import styled from "styled-components";
-import { BaseLayout, BaseListStyle, BaseMessageStyle } from "../../style";
 
 import { loadVideoDetailPage } from "../../store/ducks/pageDetails";
 import { CommentList } from "..";
 import { HeroVideo, VideoListItem } from "../../components";
 import withInfiniteScroll from "../../HOC/withInfiniteScroll";
 
-const StyledHeader = styled.h5`
-  ${BaseLayout} font-style: italic;
-  padding-top: 1em;
-`;
-
-const AuthorVideosContainer = styled.div`
-  ${BaseListStyle} border-bottom: 1px solid #ccc;
-`;
-
-const CommentsContainer = styled.div`
-  ${BaseLayout} margin-bottom: 1em;
-  max-width: 850px;
-`;
-
-const StyledMessage = styled.div`
-  ${BaseMessageStyle};
-`;
+import {
+  AuthorVideosContainer,
+  StyledHeader,
+  StyledMessage
+} from "./styles";
 
 const InfiniteComments = withInfiniteScroll(CommentList);
 
@@ -43,7 +29,7 @@ class VideoDetailPage extends Component {
             id={id.videoId}
             key={etag + Math.random()}
             loadPage={this.props.loadVideoDetailPage}
-            showDescription={false}
+            isVideoDetail={true}
             snippet={snippet}
           />
         ))}
@@ -58,14 +44,14 @@ class VideoDetailPage extends Component {
       return <StyledMessage>No comments available</StyledMessage>;
 
     return (
-      <CommentsContainer>
+      <Fragment>
         <StyledHeader>
           {comments.items.length === 1
             ? "1 comment"
             : `${comments.items.length} comments`}
         </StyledHeader>
         <InfiniteComments type="Comments" comments={comments.items} />
-      </CommentsContainer>
+      </Fragment>
     );
   };
 

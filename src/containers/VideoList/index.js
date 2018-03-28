@@ -1,20 +1,12 @@
 import React, { Component, Fragment } from "react";
 import { connect } from "react-redux";
 import PropTypes from "prop-types";
-import styled from "styled-components";
-import { BaseLayout, BaseListStyle, BaseMessageStyle } from "../../style";
 
 import { loadVideoDetailPage } from "../../store/ducks/pageDetails";
 import { saveScrollPosition } from "../../store/ducks/scrollEvent";
 import { VideoListItem } from "../../components";
 
-const VideoListContainer = styled.div`
-  ${BaseListStyle};
-`;
-
-const StyledMessage = styled.div`
-  ${BaseLayout} ${BaseMessageStyle};
-`;
+import { StyledMessage, VideoListContainer } from "./styles";
 
 class VideoList extends Component {
   componentDidMount() {
@@ -66,7 +58,7 @@ class VideoList extends Component {
 
 const mapStateToProps = ({ scrollEvent, surfVideos }) => ({
   error: surfVideos.error,
-  isLoading: surfVideos.loadingAdditional,
+  isLoading: surfVideos.loadAdditional,
   remainingCount: surfVideos.remainingCount,
   scrollPos: scrollEvent.position
 });

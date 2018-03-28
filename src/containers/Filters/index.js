@@ -1,11 +1,21 @@
 import React, { Component } from "react";
 import PropTypes from "prop-types";
 import { connect } from "react-redux";
-import styled from "styled-components";
 import { Filter as FilterIcon } from "react-feather";
-import { BaseLayout } from "../../style";
 
 import { fetchVideos } from "../../store/ducks/videos";
+
+import {
+  CurrentFilter,
+  FiltersContainer,
+  FilterGroups,
+  FilterList,
+  FilterListItem,
+  IconContainer,
+  Menu,
+  StyledSpan,
+  Title
+} from "./styles";
 
 const FILTER_GROUPS = {
   "Sort By": [
@@ -27,60 +37,6 @@ const FILTER_GROUPS = {
     { type: "videoDimension,3d", value: "3D" }
   ]
 };
-
-const FiltersContainer = styled.div`
-  background-color: #fafbfc;
-  border-bottom: 1px solid #ccc;
-  padding: 1em 0;
-`;
-
-const Menu = styled.div`
-  ${BaseLayout} align-items: center;
-  display: flex;
-  justify-content: ${props => (!props.children[0] ? "flex-end" : "flex-start")};
-`;
-
-const CurrentFilter = styled.span`
-  flex: 1;
-  font-size: 0.85em;
-  text-transform: uppercase;
-`;
-
-const IconContainer = styled.div`
-  align-items: center;
-  display: flex;
-  cursor: pointer;
-`;
-
-const StyledSpan = styled.span`
-  font-size: 0.85em;
-  text-transform: uppercase;
-`;
-
-const FilterGroups = styled.div`
-  display: flex;
-  justify-content: space-around;
-  margin: 0 auto;
-  max-width: 1200px;
-`;
-
-const FilterList = styled.ul`
-  list-style-type: none;
-  margin: 0;
-  padding: 0;
-`;
-
-const FilterListItem = styled.li`
-  cursor: pointer;
-  font-weight: lighter;
-  padding: 0.25em 0;
-`;
-
-const Title = styled.h4`
-  border-bottom: 1px solid rgba(255, 255, 255, 0.125);
-  font-weight: bold;
-  margin-top: 0;
-`;
 
 class Filters extends Component {
   state = { showFilters: false };
@@ -109,7 +65,7 @@ class Filters extends Component {
 
   render() {
     return (
-      <FiltersContainer key={1}>
+      <FiltersContainer>
         <Menu>
           {!this.state.showFilters && (
             <CurrentFilter>{`Current filter: ${

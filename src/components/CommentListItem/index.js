@@ -1,54 +1,17 @@
 import React from "react";
 import PropTypes from "prop-types";
-import styled, { css } from "styled-components";
-import { ThumbsUp as ThumbsUpIcon } from "react-feather";
 
-const Margin = css`
-  margin: 0.25em 0;
-`;
-
-const CommentListItemContainer = styled.article`
-  align-items: center;
-  border-bottom: 1px solid rgba(0, 0, 0, 0.1);
-  display: flex;
-  padding: 1em 0;
-`;
-
-const AvatarContainer = styled.div`
-  justify-content: center;
-  margin-right: 2em;
-`;
-
-const Img = styled.img`
-  border-radius: 50%;
-`;
-
-const ContentContainer = styled.div`
-  flex-direction: column;
-  justify-content: space-around;
-`;
-
-const StyledH4 = styled.div`
-  ${Margin};
-`;
-
-const StyledP = styled.p`
-  ${Margin} font-size: .75em;
-`;
-
-const StyledDiv = styled.div`
-  align-items: center;
-  display: flex;
-`;
-
-const StyledSpan = styled.span`
-  font-size: .75em;
-  margin: .5em 0 .275em;
-`;
-
-const ThumbsUp = styled(ThumbsUpIcon)`
-  height: 15px;
-`;
+import {
+  AvatarContainer,
+  CommentListItemContainer,
+  ContentContainer,
+  Img,
+  StyledDiv,
+  StyledH4,
+  StyledP,
+  StyledSpan,
+  ThumbsUp
+} from "./styles";
 
 const CommentListItem = ({
   comment: { authorDisplayName, authorProfileImageUrl, likeCount, textOriginal }

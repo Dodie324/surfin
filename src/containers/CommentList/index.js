@@ -1,17 +1,13 @@
-import React, { Fragment } from "react";
+import React from "react";
 import PropTypes from "prop-types";
 import { connect } from "react-redux";
-import styled from "styled-components";
-import { BaseLayout, BaseMessageStyle } from "../../style";
 
 import { CommentListItem } from "../../components";
 
-const StyledMessage = styled.div`
-  ${BaseLayout} ${BaseMessageStyle};
-`;
+import { CommentsContainer, StyledMessage } from "./styles";
 
 const CommentList = ({ comments, loading }) => (
-  <Fragment>
+  <CommentsContainer>
     {comments.map(({ snippet: { topLevelComment } }) => (
       <CommentListItem
         comment={topLevelComment.snippet}
@@ -19,11 +15,11 @@ const CommentList = ({ comments, loading }) => (
       />
     ))}
     {loading && <StyledMessage>Fetching more comments, brah</StyledMessage>}
-  </Fragment>
+  </CommentsContainer>
 );
 
 const mapStateToProps = ({ pageDetails }) => ({
-  loading: pageDetails.loadAdditionalComments
+  loading: pageDetails.loadAdditional
 });
 
 CommentList.propTypes = {

@@ -33,8 +33,8 @@ const withInfiniteScroll = Component => {
   }
 
   const mapStateToProps = ({ pageDetails, surfVideos }) => ({
-    loadingComments: pageDetails.loadAdditionalComments,
-    loadingVideos: surfVideos.loadingAdditional
+    loadingComments: pageDetails.loadAdditional,
+    loadingVideos: surfVideos.loadAdditional
   });
 
   WithInfiniteScroll.propTypes = {

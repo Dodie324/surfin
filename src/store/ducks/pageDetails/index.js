@@ -1,5 +1,7 @@
 import axios from "axios";
 
+import { LOADING } from "../loader";
+
 const LOAD_ADDITIONAL_COMMENTS = "LOAD_ADDITIONAL_COMMENTS";
 const LOAD_PAGE_DETAILS = "LOAD_PAGE_DETAILS";
 const LOADING_COMMENTS = "LOADING_COMMENTS";
@@ -18,7 +20,7 @@ const apiURI = {
 const INITIAL_STATE = {
   authorVideos: {},
   comments: {},
-  loadAdditionalComments: false,
+  loadAdditional: false,
   showDetails: false,
   nextPageToken: "",
 };
@@ -76,6 +78,7 @@ export const loadVideoDetailPage = (videoId, videoPageDetails) => async (
   dispatch,
   { pageDetails }
 ) => {
+  dispatch({ type: LOADING, payload: true });
   const comments = await cachedComments(videoId);
   const authorVideos = await cachedAuthorVideos(videoPageDetails.channelId);
 
@@ -88,6 +91,7 @@ export const loadVideoDetailPage = (videoId, videoPageDetails) => async (
       videoPageDetails
     }
   });
+  dispatch({ type: LOADING, payload: false });
 };
 
 const memoizedTokens = () => {
@@ -148,7 +152,7 @@ export default function(state = INITIAL_STATE, action) {
           ...action.payload.data,
           items: [...state.comments.items, ...action.payload.data.items]
         },
-        loadAdditionalComments: false
+        loadAdditional: false
       };
     case LOAD_PAGE_DETAILS:
       return {
@@ -158,9 +162,9 @@ export default function(state = INITIAL_STATE, action) {
         showDetails: true
       };
     case LOADING_COMMENTS:
-      return { ...state, loadAdditionalComments: action.payload };
+      return { ...state, loadAdditional: action.payload };
     case RETURN_TO_VIDEOS:
-      return { ...state, showDetails: false, loadAdditionalComments: false };
+      return { ...state, showDetails: false, loadAdditional: false };
     default:
       return state;
   }
