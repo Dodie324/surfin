@@ -9,19 +9,22 @@ import {
   VideoListItemContainer
 } from "./styles";
 
-const VideoListItem = ({ id, loadPage, isVideoDetail, snippet }) => {
+const VideoListItem = ({
+  id,
+  loadPage,
+  isVideoDetail,
+  snippet
+}) => {
   const { description, thumbnails, title } = snippet;
 
-  if (!thumbnails.high.url.includes("hqdefault")) return null;
-
   return (
-    <VideoListItemContainer isVideoDetail={isVideoDetail} onClick={() => loadPage(id, snippet)}>
-      <div>
-        <Thumbnail alt={title} src={thumbnails.high.url} />
-      </div>
+    <VideoListItemContainer onClick={() => loadPage(id, snippet)}>
+      <Thumbnail alt={title} src={thumbnails.medium.url} />
       <Description>
         <Title>{title.toUpperCase()}</Title>
-        {!isVideoDetail && <Overview>{description}</Overview>}
+        {!isVideoDetail && (
+          <Overview title={description}>{description}</Overview>
+        )}
       </Description>
     </VideoListItemContainer>
   );
@@ -36,6 +39,6 @@ VideoListItem.propTypes = {
 
 VideoListItem.defaultProps = {
   isVideoDetail: false
-}
+};
 
 export default VideoListItem;

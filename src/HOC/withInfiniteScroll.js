@@ -18,7 +18,7 @@ const withInfiniteScroll = Component => {
 
       if (
         window.innerHeight + window.scrollY >=
-          document.body.offsetHeight - 100 &&
+          document.body.offsetHeight - 500 &&
         !loading
       ) {
         const func = `fetchAdditional${this.props.type}`;

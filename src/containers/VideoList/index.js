@@ -45,6 +45,7 @@ class VideoList extends Component {
             <VideoListItem
               id={id.videoId}
               key={etag + Math.random()}
+              loading={this.props.isLoading}
               loadPage={this.loadPage}
               snippet={snippet}
             />

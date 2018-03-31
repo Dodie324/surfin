@@ -1,6 +1,6 @@
 import axios from "axios";
 
-import { LOADING } from "../loader";
+import { LOADING, LOADING_PAGE_DETAIL } from "../loader";
 
 const CLEAR_VIDEOS = "CLEAR_VIDEOS";
 const ERROR = "ERROR";
@@ -10,7 +10,7 @@ const LOADING_ADDITIONAL_VIDEOS = "LOADING_ADDITIONAL_VIDEOS";
 const YOUTUBE_SEARCH_URI = "https://www.googleapis.com/youtube/v3/search";
 const YOUTUBE_PARAMS = {
   key: process.env.REACT_APP_GOOGLE_API_KEY,
-  maxResults: 15,
+  maxResults: 16,
   part: "snippet",
   q: "surfing",
   type: "video"
@@ -34,6 +34,7 @@ export const fetchVideos = (
 ) => async dispatch => {
   dispatch({ type: CLEAR_VIDEOS });
   dispatch({ type: LOADING, payload: true });
+  dispatch({ type: LOADING_PAGE_DETAIL, payload: false });
 
   const [filterKey, filterValue] = stripFilter(filter);
 
@@ -64,6 +65,7 @@ export const fetchVideos = (
       type: ERROR,
       payload: { error: response.data.error.message }
     });
+    dispatch({ type: CLEAR_VIDEOS });
   }
 };
 
@@ -77,7 +79,7 @@ export const fetchAdditionalVideos = () => async (dispatch, getState) => {
     remainingCount
   } = getState().surfVideos;
   const [filterKey, filterValue] = stripFilter(filter);
-  const maxResults = remainingCount < 30 ? remainingCount : 30;
+  const maxResults = remainingCount < 32 ? remainingCount : 32;
 
   try {
     const { data } = await axios.get(YOUTUBE_SEARCH_URI, {
@@ -110,7 +112,7 @@ export const fetchAdditionalVideos = () => async (dispatch, getState) => {
 export default function(state = INITIAL_STATE, action) {
   switch (action.type) {
     case CLEAR_VIDEOS:
-      return { ...state, videos: [] };
+      return { ...state, query: "", videos: [] };
     case ERROR:
       return { ...state, error: action.payload.error };
     case FETCH_VIDEO_DATA:

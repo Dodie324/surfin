@@ -14,11 +14,11 @@ const onEnter = fn => {
   };
 };
 
-const SearchBar = ({ onChange, onClick, onSubmit, query }) => {
-  const handleKeyDown = onEnter(onSubmit);
+const SearchBar = ({ fetchVideos, onChange }) => {
+  const handleKeyDown = onEnter(fetchVideos);
   const handleOnSubmit = e => {
     e.preventDefault();
-    onSubmit();
+    fetchVideos();
   };
 
   return (
@@ -26,13 +26,10 @@ const SearchBar = ({ onChange, onClick, onSubmit, query }) => {
       <SearchBarContainer>
         <StyledInput
           onChange={e => onChange(e.target.value)}
-          placeholder="Search"
+          placeholder="Search surfing videos"
           tabIndex={0}
         />
-        <ButtonContainer
-          onClick={() => onClick(query)}
-          onKeyDown={handleKeyDown}
-        >
+        <ButtonContainer onClick={fetchVideos} onKeyDown={handleKeyDown}>
           <Button />
         </ButtonContainer>
       </SearchBarContainer>
@@ -41,9 +38,8 @@ const SearchBar = ({ onChange, onClick, onSubmit, query }) => {
 };
 
 SearchBar.propTypes = {
-  onChange: PropTypes.func.isRequired,
-  onClick: PropTypes.func.isRequired,
-  query: PropTypes.string.isRequired
+  fetchVideos: PropTypes.func.isRequired,
+  onChange: PropTypes.func.isRequired
 };
 
 export default SearchBar;

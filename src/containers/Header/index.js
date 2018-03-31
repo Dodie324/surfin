@@ -14,19 +14,12 @@ class Header extends Component {
 
   handleOnChange = query => this.setState({ query });
 
-  handleOnClick = () => {
-    this.props.returnToVideoList();
-    window.scrollTo(0, 0);
-  };
-
-  handleOnSubmit = () => this.props.fetchVideos(this.state.query);
-
   fetchVideos = () => this.props.fetchVideos(this.state.query);
 
   render() {
     return (
       <HeaderContainer>
-        <LogoContainer onClick={this.handleOnClick}>
+        <LogoContainer>
           <Logo src={logo} alt="logo" />
           <Title>surfin</Title>
         </LogoContainer>
@@ -34,9 +27,8 @@ class Header extends Component {
           <NavButton onClick={this.props.returnToVideoList} />
         )}
         <SearchBar
+          fetchVideos={this.fetchVideos}
           onChange={this.handleOnChange}
-          onClick={this.fetchVideos}
-          onSubmit={this.handleOnSubmit}
           query={this.state.query}
         />
       </HeaderContainer>

@@ -30,6 +30,6 @@ export const LoaderContainer = styled.div`
 
 export const Loader = styled.img`
   animation: ${rotate360} 2s linear infinite;
-  height: 75px;
-  width: 75px;
+  height: 100px;
+  width: 100px;
 `;

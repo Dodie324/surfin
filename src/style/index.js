@@ -1,9 +1,9 @@
 import { css, keyframes } from "styled-components";
 
 export const layouts = {
-  desktop: 1200,
+  desktop: 1600,
   tablet: 768,
-  mobile: 550
+  mobile: 414
 };
 
 export const media = Object.keys(layouts).reduce((styles, type) => {

@@ -14,7 +14,7 @@ class App extends Component {
   }
 
   renderComponent = () => {
-    if (this.props.showDetails) {
+    if (this.props.loadPageDetails) {
       return <VideoDetailPage />;
     } else {
       return <VideoListContainer />;
@@ -32,7 +32,7 @@ class App extends Component {
 
     return (
       <div>
-        <Header isDetailPage={this.props.showDetails} />
+        <Header isDetailPage={this.props.loadPageDetails} />
         <Placeholder />
         {this.renderComponent()}
       </div>
@@ -40,13 +40,14 @@ class App extends Component {
   }
 }
 
-const mapStateToProps = ({ loader, pageDetails }) => ({
-  showDetails: pageDetails.showDetails,
-  isLoading: loader.loading
+const mapStateToProps = ({ loader }) => ({
+  isLoading: loader.loading,
+  loadPageDetails: loader.loadPageDetails
 });
 
 App.propTypes = {
-  showDetails: PropTypes.bool.isRequired
+  isLoading: PropTypes.bool,
+  loadPageDetails: PropTypes.bool
 };
 
 export default connect(mapStateToProps, { fetchVideos })(App);

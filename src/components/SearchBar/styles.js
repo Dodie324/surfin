@@ -29,14 +29,14 @@ export const StyledInput = styled.input`
   }
 
   ${media.mobile`
-    font-size: 14px;
-    width: 150px;
+    font-size: 12px;
+    width: 145px;
   `};
 `;
 
 export const ButtonContainer = styled.div`
   align-items: center;
-  background-color: #eef1f2;
+  background-color: #488ac8;
   border-radius: 0 2px 2px 0;
   cursor: pointer;
   display: flex;
@@ -54,6 +54,6 @@ export const ButtonContainer = styled.div`
 export const Button = styled(SearchIcon)`
   cursor: pointer;
   height: 20px;
-  stroke: #828282;
+  stroke: #fff;
   width: 20px;
 `;
