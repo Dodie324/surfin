@@ -1,28 +1,35 @@
 import React from "react";
+import { connect } from "react-redux";
 import PropTypes from "prop-types";
 
 import { HeroContainer, Iframe, StyledH2 } from "./styles";
 
-const HeroVideo = ({ id, mute = 1, snippet }) => {
+const HeroVideo = ({ mute = 1, video }) => {
   const renderHeroVideo = () => (
     <HeroContainer>
       <Iframe
         src={`https://youtube.com/embed/${
-          id.videoId
+          video.id.videoId
         }?autoplay=1&rel=0&mute=${mute}`}
-        title={snippet.title}
+        title={video.snippet.title}
       />
-      <StyledH2>{`${snippet.title} — ${snippet.channelTitle}`}</StyledH2>
+      <StyledH2>{`${video.snippet.title} — ${
+        video.snippet.channelTitle
+      }`}</StyledH2>
     </HeroContainer>
   );
 
   return renderHeroVideo();
 };
 
+const mapStateToProps = ({ pageDetails, surfVideos }, ownProps) =>
+  ownProps.loadFirstHit
+    ? { video: surfVideos.videoData.items[0] }
+    : { video: pageDetails.videoData };
+
 HeroVideo.propTypes = {
-  id: PropTypes.object.isRequired,
   mute: PropTypes.number,
-  snippet: PropTypes.object.isRequired
+  video: PropTypes.object.isRequired
 };
 
-export default HeroVideo;
+export default connect(mapStateToProps)(HeroVideo);

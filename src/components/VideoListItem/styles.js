@@ -22,7 +22,7 @@ export const VideoListItemContainer = styled.div`
   margin: 0.5em 0;
   padding: 0 0.5em;
   position: relative;
-  width: 24%;
+  width: 25%;
 
   &:hover {
     img {

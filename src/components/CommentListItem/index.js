@@ -1,5 +1,6 @@
-import React from "react";
+import React, { Component } from "react";
 import PropTypes from "prop-types";
+import isEqual from "lodash/isEqual";
 
 import {
   AvatarContainer,
@@ -13,23 +14,35 @@ import {
   ThumbsUp
 } from "./styles";
 
-const CommentListItem = ({
-  comment: { authorDisplayName, authorProfileImageUrl, likeCount, textOriginal }
-}) => (
-  <CommentListItemContainer>
-    <AvatarContainer>
-      <Img alt={authorDisplayName} src={authorProfileImageUrl} />
-    </AvatarContainer>
-    <ContentContainer>
-      <StyledH4>{authorDisplayName}</StyledH4>
-      <StyledP>{textOriginal}</StyledP>
-      <StyledDiv>
-        <ThumbsUp />
-        <StyledSpan>{likeCount}</StyledSpan>
-      </StyledDiv>
-    </ContentContainer>
-  </CommentListItemContainer>
-);
+class CommentListItem extends Component {
+  shouldComponentUpdate(nextProps) {
+    return !isEqual(this.props.comment, nextProps.comment);
+  }
+
+  render() {
+    const {
+      authorDisplayName,
+      authorProfileImageUrl,
+      likeCount,
+      textOriginal
+    } = this.props.comment;
+    return (
+      <CommentListItemContainer>
+        <AvatarContainer>
+          <Img alt={authorDisplayName} src={authorProfileImageUrl} />
+        </AvatarContainer>
+        <ContentContainer>
+          <StyledH4>{authorDisplayName}</StyledH4>
+          <StyledP>{textOriginal}</StyledP>
+          <StyledDiv>
+            <ThumbsUp />
+            <StyledSpan>{likeCount}</StyledSpan>
+          </StyledDiv>
+        </ContentContainer>
+      </CommentListItemContainer>
+    );
+  }
+}
 
 CommentListItem.propTypes = {
   comment: PropTypes.object

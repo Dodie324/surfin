@@ -1,80 +1,63 @@
-import React, { Component, Fragment } from "react";
+import React, { Fragment } from "react";
 import { connect } from "react-redux";
 import PropTypes from "prop-types";
 
-import { loadVideoDetailPage } from "../../store/ducks/pageDetails";
-import { saveScrollPosition } from "../../store/ducks/scrollEvent";
 import { VideoListItem } from "../../components";
 
-import { StyledMessage, VideoListContainer } from "./styles";
+import {
+  Dab,
+  NoResults,
+  StyledMessage,
+  Text,
+  VideoListContainer
+} from "./styles";
+import dab from "../../style/dab.png";
 
-class VideoList extends Component {
-  componentDidMount() {
-    const { scrollPos } = this.props;
-    window.scrollTo(0, scrollPos);
-  }
-
-  loadPage = (id, snippet) => {
-    this.props.saveScrollPosition(window.pageYOffset);
-    this.props.loadVideoDetailPage(id, snippet);
-  };
-
-  renderMessageOrNot = () => {
-    if (this.props.remainingCount <= 0) {
-      return <StyledMessage>End of results</StyledMessage>;
-    } else if (this.props.isLoading) {
-      return <StyledMessage>Fetching more videos, brah</StyledMessage>;
-    } else {
-      return null;
-    }
-  };
-
-  render() {
-    if (this.props.error) {
-      return (
-        <StyledMessage>{`Bummer, dude. There seems to be an issue. ${
-          this.props.error
-        }`}</StyledMessage>
-      );
-    }
-
+const VideoList = ({ error, isLoading, loadPage, totalResults, videos }) => {
+  if (error) {
     return (
-      <Fragment>
-        <VideoListContainer>
-          {this.props.videos.map(({ etag, id, snippet }) => (
-            <VideoListItem
-              id={id.videoId}
-              key={etag + Math.random()}
-              loading={this.props.isLoading}
-              loadPage={this.loadPage}
-              snippet={snippet}
-            />
-          ))}
-        </VideoListContainer>
-        {this.renderMessageOrNot()}
-      </Fragment>
+      <StyledMessage>{`Bummer, dude. There seems to be an issue. ${
+        this.props.error
+      }`}</StyledMessage>
     );
   }
-}
 
-const mapStateToProps = ({ scrollEvent, surfVideos }) => ({
+  if (videos.length === 0) {
+    return (
+      <NoResults>
+        <Dab src={dab} />
+        <Text>No videos found</Text>
+      </NoResults>
+    );
+  }
+
+  return (
+    <Fragment>
+      <VideoListContainer>
+        {videos.map(video => (
+          <VideoListItem
+            key={video.etag}
+            loading={isLoading}
+            loadPage={loadPage}
+            video={video}
+          />
+        ))}
+      </VideoListContainer>
+      {isLoading && <StyledMessage>Fetching more videos, brah</StyledMessage>}
+    </Fragment>
+  );
+};
+
+const mapStateToProps = ({ surfVideos }) => ({
   error: surfVideos.error,
   isLoading: surfVideos.loadAdditional,
-  remainingCount: surfVideos.remainingCount,
-  scrollPos: scrollEvent.position
+  videos: surfVideos.videoData.items
 });
 
 VideoList.propTypes = {
   error: PropTypes.string,
   isLoading: PropTypes.bool.isRequired,
-  loadVideoDetailPage: PropTypes.func.isRequired,
-  remainingCount: PropTypes.number,
-  saveScrollPosition: PropTypes.func.isRequired,
-  scrollPos: PropTypes.number,
   videos: PropTypes.arrayOf(PropTypes.object).isRequired
 };
 
-export default connect(mapStateToProps, {
-  loadVideoDetailPage,
-  saveScrollPosition
-})(VideoList);
+export default connect(mapStateToProps)(VideoList);

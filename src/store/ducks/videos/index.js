@@ -4,13 +4,15 @@ import { LOADING, LOADING_PAGE_DETAIL } from "../loader";
 
 const CLEAR_VIDEOS = "CLEAR_VIDEOS";
 const ERROR = "ERROR";
-const FETCH_VIDEO_DATA = "FETCH_VIDEO_DATA";
-const LOADING_ADDITIONAL_VIDEOS = "LOADING_ADDITIONAL_VIDEOS";
+const LOAD_VIDEO_LIST = "LOAD_VIDEO_LIST";
+const LOAD_ADDITIONAL_VIDEOS = "LOADING_ADDITIONAL_VIDEOS";
+
+const MAX_RESULTS = 32;
 
 const YOUTUBE_SEARCH_URI = "https://www.googleapis.com/youtube/v3/search";
 const YOUTUBE_PARAMS = {
   key: process.env.REACT_APP_GOOGLE_API_KEY,
-  maxResults: 16,
+  maxResults: MAX_RESULTS,
   part: "snippet",
   q: "surfing",
   type: "video"
@@ -18,15 +20,28 @@ const YOUTUBE_PARAMS = {
 
 const INITIAL_STATE = {
   loadAdditional: false,
-  nextPageToken: "",
   filter: "order,relevance",
   query: "",
-  remainingCount: null,
-  totalResults: null,
-  videos: []
+  videoData: {}
 };
 
 const stripFilter = f => f.split(",");
+
+const renderedSet = () => {
+  let set = new Set();
+  return (etag, reset = false) => {
+    if (reset) set = new Set();
+
+    if (set.has(etag)) {
+      return true;
+    } else {
+      set.add(etag);
+      return false;
+    }
+  };
+};
+
+const hasRendered = renderedSet();
 
 export const fetchVideos = (
   query = "",
@@ -47,16 +62,19 @@ export const fetchVideos = (
       }
     });
 
+    const sanitizedData = data.items.filter(i => !hasRendered(i.etag, true));
+
     dispatch({
-      type: FETCH_VIDEO_DATA,
+      type: LOAD_VIDEO_LIST,
       payload: {
         filter,
-        nextPageToken: data.nextPageToken,
         query,
-        remainingCount:
-          data.pageInfo.totalResults - data.pageInfo.resultsPerPage,
-        totalResults: data.pageInfo.totalResults,
-        videos: data.items
+        videoData: {
+          ...data,
+          items: sanitizedData,
+          remainingCount:
+            data.pageInfo.totalResults - data.pageInfo.resultsPerPage
+        }
       }
     });
     dispatch({ type: LOADING, payload: false });
@@ -70,16 +88,14 @@ export const fetchVideos = (
 };
 
 export const fetchAdditionalVideos = () => async (dispatch, getState) => {
-  dispatch({ type: LOADING_ADDITIONAL_VIDEOS });
-
   const {
-    nextPageToken,
     filter,
     query,
-    remainingCount
+    videoData: { nextPageToken, remainingCount }
   } = getState().surfVideos;
   const [filterKey, filterValue] = stripFilter(filter);
-  const maxResults = remainingCount < 32 ? remainingCount : 32;
+  const maxResults =
+    remainingCount < MAX_RESULTS ? remainingCount : MAX_RESULTS;
 
   try {
     const { data } = await axios.get(YOUTUBE_SEARCH_URI, {
@@ -92,13 +108,18 @@ export const fetchAdditionalVideos = () => async (dispatch, getState) => {
       }
     });
 
+    if (!data.items.length) return;
+
+    const sanitizedData = data.items.filter(i => !hasRendered(i.etag));
+
     dispatch({
-      type: FETCH_VIDEO_DATA,
+      type: LOAD_ADDITIONAL_VIDEOS,
       payload: {
-        nextPageToken: data.nextPageToken,
-        remainingCount: remainingCount - data.pageInfo.resultsPerPage,
-        totalResults: data.pageInfo.totalResults,
-        videos: data.items
+        videoData: {
+          ...data,
+          items: sanitizedData,
+          remainingCount: remainingCount - data.pageInfo.resultsPerPage
+        }
       }
     });
   } catch ({ response }) {
@@ -112,30 +133,23 @@ export const fetchAdditionalVideos = () => async (dispatch, getState) => {
 export default function(state = INITIAL_STATE, action) {
   switch (action.type) {
     case CLEAR_VIDEOS:
-      return { ...state, query: "", videos: [] };
+      return INITIAL_STATE;
     case ERROR:
       return { ...state, error: action.payload.error };
-    case FETCH_VIDEO_DATA:
-      const updatedState = {
+    case LOAD_VIDEO_LIST:
+      return {
+        ...state,
+        ...action.payload
+      };
+    case LOAD_ADDITIONAL_VIDEOS:
+      return {
         ...state,
         loadAdditional: false,
-        nextPageToken: action.payload.nextPageToken,
-        remainingCount: action.payload.remainingCount,
-        totalResults: action.payload.totalResults,
-        videos: [...state.videos, ...action.payload.videos]
+        videoData: {
+          ...action.payload.videoData,
+          items: [...state.videoData.items, ...action.payload.videoData.items]
+        }
       };
-
-      if (action.payload.filter) {
-        updatedState.filter = action.payload.filter;
-      }
-
-      if (action.payload.query) {
-        updatedState.query = action.payload.query;
-      }
-
-      return updatedState;
-    case LOADING_ADDITIONAL_VIDEOS:
-      return { ...state, loadAdditional: true };
     default:
       return state;
   }

@@ -1,10 +1,5 @@
 import styled from "styled-components";
-import {
-  media,
-  BaseLayout,
-  BaseListStyle,
-  BaseMessageStyle
-} from "../../style";
+import { media, BaseLayout, BaseListStyle } from "../../style";
 
 export const StyledHeader = styled.h5`
   ${BaseLayout} font-style: italic;
@@ -27,8 +22,4 @@ export const AuthorVideosContainer = styled.div`
   ${media.mobile`
     padding-top: 0;
   `};
-`;
-
-export const StyledMessage = styled.div`
-  ${BaseMessageStyle};
 `;

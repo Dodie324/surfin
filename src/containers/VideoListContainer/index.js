@@ -1,56 +1,59 @@
-import React, { Fragment } from "react";
+import React, { Component, Fragment } from "react";
 import { connect } from "react-redux";
 import PropTypes from "prop-types";
 
-import { fetchVideos } from "../../store/ducks/videos";
+import { loadVideoDetailPage } from "../../store/ducks/pageDetails";
+import { saveScrollPosition } from "../../store/ducks/scrollEvent";
 import { Filters, VideoList } from "..";
 import { HeroVideo } from "../../components";
 import withInfiniteScroll from "../../HOC/withInfiniteScroll";
 
-import { Dab, NoResults, StyledMessage, Text } from "./styles";
-import dab from "../../style/dab.png";
+import { StyledMessage } from "./styles";
 
 const InfiniteVideoList = withInfiniteScroll(VideoList);
 
-const VideoListContainer = ({ isLoading, totalResults, videos }) => {
-  const renderInfiniteList = () => {
-    return <InfiniteVideoList type="Videos" videos={videos} />;
+class VideoListContainer extends Component {
+  componentDidMount() {
+    window.scrollTo(0, this.props.scrollPos);
+  }
+
+  loadPage = (id, snippet) => {
+    this.props.saveScrollPosition(window.pageYOffset);
+    this.props.loadVideoDetailPage(id, snippet);
   };
 
-  if (isLoading)
+  render() {
+    if (this.props.isLoading)
+      return (
+        <StyledMessage>
+          <span>Loading...</span>
+        </StyledMessage>
+      );
+
     return (
-      <StyledMessage>
-        <span>Loading...</span>
-      </StyledMessage>
+      <Fragment>
+        <HeroVideo loadFirstHit={true} />
+        <Filters />
+        <InfiniteVideoList loadPage={this.loadPage} type="Videos" />
+      </Fragment>
     );
+  }
+}
 
-  if (totalResults === 0)
-    return (
-      <NoResults>
-        <Dab src={dab} />
-        <Text>No videos found</Text>
-      </NoResults>
-    );
-
-  return (
-    <Fragment>
-      <HeroVideo {...videos[0]} />
-      <Filters />
-      {renderInfiniteList()}
-    </Fragment>
-  );
-};
-
-const mapStateToProps = ({ loader, surfVideos }) => ({
+const mapStateToProps = ({ loader, scrollEvent }) => ({
   isLoading: loader.loading,
-  totalResults: surfVideos.totalResults,
-  videos: surfVideos.videos
+  scrollPos: scrollEvent.position,
 });
 
 VideoListContainer.propTypes = {
   isLoading: PropTypes.bool.isRequired,
-  totalResults: PropTypes.number,
-  videos: PropTypes.arrayOf(PropTypes.object)
+  loadVideoDetailPage: PropTypes.func.isRequired,
+  saveScrollPosition: PropTypes.func.isRequired,
+  scrollPos: PropTypes.number,
+  totalResults: PropTypes.number
 };
 
-export default connect(mapStateToProps, { fetchVideos })(VideoListContainer);
+export default connect(mapStateToProps, {
+  loadVideoDetailPage,
+  saveScrollPosition
+})(VideoListContainer);

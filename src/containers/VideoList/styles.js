@@ -4,6 +4,7 @@ import { media } from "../../style";
 
 export const VideoListContainer = styled.div`
   ${BaseListStyle};
+  justify-content: flex-start;
 
   ${media.mobile`
     justify-content: flex-start;
@@ -23,4 +24,21 @@ export const StyledMessage = styled.div`
   ${media.mobile`
     margin: 1em;
   `};
+`;
+export const NoResults = styled.div`
+  align-items: center;
+  background-color: #eef1f2;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding-top: 4em;
+`;
+
+export const Text = styled.h2`
+  text-transform: uppercase;
+`;
+
+export const Dab = styled.img`
+  height: 400px;
+  width: 400px;
 `;

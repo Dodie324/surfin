@@ -1,5 +1,6 @@
-import React from "react";
+import React, { Component } from "react";
 import PropTypes from "prop-types";
+import isEqual from "lodash/isEqual"
 
 import {
   Description,
@@ -9,32 +10,34 @@ import {
   VideoListItemContainer
 } from "./styles";
 
-const VideoListItem = ({
-  id,
-  loadPage,
-  isVideoDetail,
-  snippet
-}) => {
-  const { description, thumbnails, title } = snippet;
+class VideoListItem extends Component {
+  shouldComponentUpdate(nextProps) {
+    return !isEqual(this.props.video, nextProps.video);
+  }
 
-  return (
-    <VideoListItemContainer onClick={() => loadPage(id, snippet)}>
-      <Thumbnail alt={title} src={thumbnails.medium.url} />
-      <Description>
-        <Title>{title.toUpperCase()}</Title>
-        {!isVideoDetail && (
-          <Overview title={description}>{description}</Overview>
-        )}
-      </Description>
-    </VideoListItemContainer>
-  );
+  render() {
+    const { description, thumbnails, title } = this.props.video.snippet;
+
+    if (!thumbnails.medium.url.includes('mqdefault')) return null;
+
+    return (
+      <VideoListItemContainer onClick={() => this.props.loadPage(this.props.video)}>
+        <Thumbnail alt={title} src={thumbnails.medium.url} />
+        <Description>
+          <Title>{title.toUpperCase()}</Title>
+          {!this.props.isVideoDetail && (
+            <Overview title={description}>{description}</Overview>
+          )}
+        </Description>
+      </VideoListItemContainer>
+    );
+  }
 };
 
 VideoListItem.propTypes = {
-  id: PropTypes.string.isRequired,
   isVideoDetail: PropTypes.bool,
   loadPage: PropTypes.func,
-  snippet: PropTypes.object.isRequired
+  video: PropTypes.object.isRequired
 };
 
 VideoListItem.defaultProps = {

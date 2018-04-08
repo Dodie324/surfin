@@ -51,7 +51,7 @@ const memoizedData = field => {
         params = {
           ...YOUTUBE_PARAMS,
           channelId: id,
-          maxResults: 10
+          maxResults: 12
         };
       }
 
@@ -72,23 +72,19 @@ const memoizedData = field => {
 const cachedComments = memoizedData("comments");
 const cachedAuthorVideos = memoizedData("videos");
 
-export const loadVideoDetailPage = (videoId, videoPageDetails) => async (
-  dispatch,
-  { pageDetails }
-) => {
+export const loadVideoDetailPage = videoData => async dispatch => {
   dispatch({ type: LOADING, payload: true });
   dispatch({ type: LOADING_PAGE_DETAIL, payload: true });
 
-  const comments = await cachedComments(videoId);
-  const authorVideos = await cachedAuthorVideos(videoPageDetails.channelId);
+  const comments = await cachedComments(videoData.id.videoId);
+  const authorVideos = await cachedAuthorVideos(videoData.snippet.channelId);
 
   dispatch({
     type: LOAD_PAGE_DETAILS,
     payload: {
       authorVideos,
       comments,
-      videoId,
-      videoPageDetails
+      videoData
     }
   });
   dispatch({ type: LOADING, payload: false });
@@ -116,12 +112,12 @@ const cachedTokens = memoizedTokens();
 export const fetchAdditionalComments = () => async (dispatch, getState) => {
   dispatch({ type: LOADING_COMMENTS, payload: true });
 
-  const { comments, videoId } = getState().pageDetails;
+  const { comments, videoData } = getState().pageDetails;
   const { etag, nextPageToken } = comments;
   const params = {
     ...YOUTUBE_PARAMS,
     maxResults: 20,
-    videoId
+    videoId: videoData.id.videoId
   };
   const token = cachedTokens(etag, nextPageToken);
 
